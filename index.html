@@ -1,862 +1,737 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบรายงานอุบัติการณ์ ME</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Font Awesome (Icons) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Sarabun -->
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <!-- ✅ HTML5-QRCode Scanner Library -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Sarabun', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            blue: '#4A90E2',
-                            light: '#F0F4F8',
-                        }
-                    }
-                }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบรายงานอุบัติการณ์ ME</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Font Awesome (Icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Sarabun -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- ✅ HTML5-QRCode Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              blue: '#4A90E2',
+              light: '#F0F4F8',
             }
+          }
         }
-    </script>
+      }
+    }
+  </script>
 
-    <style>
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
-        }
+  <style>
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%); 
+    }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
+    .btn-type { 
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+      position: relative; 
+      overflow: visible; 
+    }
+    .btn-type:active { transform: scale(0.96); }
+    
+    .checkmark { 
+      position: absolute; 
+      top: -10px;    
+      right: -10px;  
+      background: #10B981; color: white; 
+      width: 28px; height: 28px; border-radius: 50%; 
+      display: flex; align-items: center; justify-content: center;
+      border: 3px solid white;
+      opacity: 0; transform: scale(0);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      z-index: 20;
+    }
+    
+    .btn-type.selected .checkmark { opacity: 1; transform: scale(1); }
+    .btn-type.selected { transform: translateY(-4px); box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15); z-index: 10; }
 
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        .btn-type {
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: visible;
-        }
-
-        .btn-type:active {
-            transform: scale(0.96);
-        }
-
-        .checkmark {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #10B981;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid white;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-            z-index: 20;
-        }
-
-        .btn-type.selected .checkmark {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .btn-type.selected {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
-            z-index: 10;
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* CSS สำหรับ Scanner */
-        #reader video {
-            border-radius: 10px;
-            object-fit: cover;
-        }
-    </style>
+    /* CSS สำหรับ Scanner */
+    #reader {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    #reader video {
+        object-fit: cover;
+        border-radius: 10px;
+        width: 100% !important;
+        height: 100% !important;
+    }
+  </style>
 </head>
-
 <body class="min-h-screen flex flex-col items-center justify-center p-4 text-gray-700">
 
-    <div class="w-full max-w-3xl bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/50 relative flex flex-col"
-        style="min-height: 700px;">
-
-        <!-- Header Bar -->
-        <div class="px-6 py-4 bg-white border-b flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
-                    <i class="fa-solid fa-notes-medical text-xl"></i>
-                </div>
-                <h1 class="text-lg font-bold text-gray-800">ระบบรายงานอุบัติการณ์ ME</h1>
-            </div>
-            <div class="bg-gray-100 p-1 rounded-full flex shadow-inner">
-                <button onclick="switchTab('form')" id="tab-form"
-                    class="px-6 py-2 rounded-full text-sm font-bold transition-all shadow bg-white text-blue-600">
-                    บันทึกข้อมูล
-                </button>
-                <button onclick="switchTab('dashboard')" id="tab-dashboard"
-                    class="px-6 py-2 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition-all">
-                    Dashboard & รายงาน
-                </button>
-            </div>
+  <div class="w-full max-w-3xl bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/50 relative flex flex-col" style="min-height: 700px;">
+    
+    <!-- Header Bar -->
+    <div class="px-6 py-4 bg-white border-b flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
+          <i class="fa-solid fa-notes-medical text-xl"></i>
         </div>
+        <h1 class="text-lg font-bold text-gray-800">ระบบรายงานอุบัติการณ์ ME</h1>
+      </div>
+      <div class="bg-gray-100 p-1 rounded-full flex shadow-inner">
+        <button onclick="switchTab('form')" id="tab-form" class="px-6 py-2 rounded-full text-sm font-bold transition-all shadow bg-white text-blue-600">
+          บันทึกข้อมูล
+        </button>
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="px-6 py-2 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition-all">
+          Dashboard & รายงาน
+        </button>
+      </div>
+    </div>
 
-        <!-- Content Area -->
-        <div class="flex-1 overflow-y-auto p-2 relative">
-
-            <!-- 📝 View 1: Form Section -->
-            <div id="view-form" class="p-4 md:p-8 animate-fade-in max-w-2xl mx-auto">
-
-                <div class="rounded-2xl overflow-hidden shadow-lg mb-6 bg-white">
-                    <div
-                        class="bg-gradient-to-r from-orange-300 to-orange-400 p-4 text-center relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-full h-full bg-white opacity-10 transform -skew-x-12"></div>
-                        <h2 class="text-xl font-bold text-white relative z-10 drop-shadow-md">รายงานอุบัติการณ์ (ME)
-                        </h2>
-                        <p class="text-white/80 text-xs relative z-10">Medication Error Reporting System</p>
+    <!-- Content Area -->
+    <div class="flex-1 overflow-y-auto p-2 relative">
+      
+      <!-- 📝 View 1: Form Section -->
+      <div id="view-form" class="p-4 md:p-8 animate-fade-in max-w-2xl mx-auto">
+        
+        <div class="rounded-2xl overflow-hidden shadow-lg mb-6 bg-white">
+          <div class="bg-gradient-to-r from-orange-300 to-orange-400 p-4 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full bg-white opacity-10 transform -skew-x-12"></div>
+            <h2 class="text-xl font-bold text-white relative z-10 drop-shadow-md">รายงานอุบัติการณ์ (ME)</h2>
+            <p class="text-white/80 text-xs relative z-10">Medication Error Reporting System</p>
+          </div>
+          
+          <div class="p-6 pt-8">
+            <form id="meForm" onsubmit="handleFormSubmit(event)">
+              
+              <!-- Row 1: Date & HN -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-600 mb-2">วันที่เกิดเหตุ</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fa-regular fa-calendar text-gray-400"></i>
                     </div>
-
-                    <div class="p-6 pt-8">
-                        <form id="meForm" onsubmit="handleFormSubmit(event)">
-
-                            <!-- Row 1: Date & HN -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-600 mb-2">วันที่เกิดเหตุ</label>
-                                    <div class="relative">
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class="fa-regular fa-calendar text-gray-400"></i>
-                                        </div>
-                                        <input type="date" name="incidentDate" required
-                                            class="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm font-medium text-gray-700 shadow-sm">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-600 mb-2">HN ผู้ป่วย</label>
-                                    <div class="relative flex items-center">
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class="fa-regular fa-id-card text-gray-400"></i>
-                                        </div>
-                                        <input type="text" id="hnInput" name="hn" placeholder="ระบุเลข HN" required
-                                            class="w-full pl-10 pr-12 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm font-medium text-gray-700 shadow-sm">
-                                        <!-- ✅ ปุ่มสแกน Barcode เพิ่มเข้ามาตรงนี้ -->
-                                        <button type="button" onclick="startScanner()"
-                                            class="absolute right-2 p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                            title="สแกน Barcode">
-                                            <i class="fa-solid fa-qrcode text-xl"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Row 2: Button Selection -->
-                            <div class="mb-6">
-                                <p class="text-center text-sm font-semibold text-gray-500 mb-4">
-                                    เลือกประเภทความคลาดเคลื่อน</p>
-                                <input type="hidden" name="meType" id="meType">
-
-                                <div class="grid grid-cols-3 gap-4">
-                                    <button type="button" onclick="selectType('แพ้ยาซ้ำ', 1, this)"
-                                        class="btn-type group relative bg-white border-2 border-gray-100 hover:border-teal-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 h-28 shadow-sm hover:bg-teal-50">
-                                        <div
-                                            class="w-10 h-10 rounded-full bg-teal-100 text-teal-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
-                                            <i class="fa-solid fa-pills"></i>
-                                        </div>
-                                        <span
-                                            class="font-bold text-gray-600 group-hover:text-teal-700 text-sm">แพ้ยาซ้ำ</span>
-                                        <div class="checkmark"><i class="fa-solid fa-check text-xs"></i></div>
-                                    </button>
-
-                                    <button type="button" onclick="selectType('จ่ายยาผิดคน', 2, this)"
-                                        class="btn-type group relative bg-white border-2 border-gray-100 hover:border-pink-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 h-28 shadow-sm hover:bg-pink-50">
-                                        <div
-                                            class="w-10 h-10 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
-                                            <i class="fa-solid fa-user-xmark"></i>
-                                        </div>
-                                        <span
-                                            class="font-bold text-gray-600 group-hover:text-pink-700 text-sm">ผิดคน</span>
-                                        <div class="checkmark"><i class="fa-solid fa-check text-xs"></i></div>
-                                    </button>
-
-                                    <button type="button" onclick="selectType('ME ระดับ E ขึ้นไป', 3, this)"
-                                        class="btn-type group relative bg-white border-2 border-gray-100 hover:border-orange-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 h-28 shadow-sm hover:bg-orange-50">
-                                        <div
-                                            class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
-                                            <i class="fa-solid fa-triangle-exclamation"></i>
-                                        </div>
-                                        <span class="font-bold text-gray-600 group-hover:text-orange-700 text-sm">ระดับ
-                                            E+</span>
-                                        <div class="checkmark"><i class="fa-solid fa-check text-xs"></i></div>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Hidden Details Section -->
-                            <div id="detailSection"
-                                class="hidden space-y-5 border-t border-dashed border-gray-200 pt-5 animate-fade-in">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-600 mb-2">รายละเอียด <span
-                                            class="text-red-400">*</span></label>
-                                    <textarea name="meDetails" id="meDetails" rows="3" required
-                                        class="w-full p-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm text-gray-700 resize-none shadow-sm"
-                                        placeholder="รายละเอียดเพิ่มเติม"></textarea>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-600 mb-2">ระดับความรุนแรง <span
-                                            class="text-red-400">*</span></label>
-                                    <div class="relative">
-                                        <select name="severity" id="severity" required
-                                            class="w-full p-3 pl-4 pr-10 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm font-medium text-gray-700 appearance-none shadow-sm cursor-pointer">
-                                            <option value="">-- เลือกระดับความรุนแรง --</option>
-                                            <option value="A">【 A 】 มีโอกาสเกิด แต่ยังไม่เกิด</option>
-                                            <option value="B">【 B 】 เกิดแล้ว แต่ไม่ถึงผู้ป่วย</option>
-                                            <option value="C">【 C 】 ถึงผู้ป่วย แต่ไม่เป็นอันตราย</option>
-                                            <option value="D">【 D 】 ถึงผู้ป่วย ต้องเฝ้าระวัง</option>
-                                            <option value="E">【 E 】 เป็นอันตรายชั่วคราว/ต้องรักษา</option>
-                                            <option value="F">【 F 】 ต้องนอน รพ./ยืดเวลานอน รพ.</option>
-                                            <option value="G">【 G 】 เป็นอันตรายถาวร</option>
-                                            <option value="H">【 H 】 ต้องกู้ชีพ/ช่วยชีวิต</option>
-                                            <option value="I">【 I 】 เสียชีวิต</option>
-                                        </select>
-                                        <div
-                                            class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-3 pt-4">
-                                    <button type="button" onclick="resetForm()"
-                                        class="flex-1 py-3 rounded-full border border-gray-300 text-gray-500 font-bold hover:bg-gray-50 hover:text-gray-700 transition-all">ยกเลิก</button>
-                                    <button type="submit"
-                                        class="flex-[2] py-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all active:scale-95">บันทึกข้อมูล</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <input type="date" name="incidentDate" required 
+                           class="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm font-medium text-gray-700 shadow-sm">
+                  </div>
                 </div>
-                <p class="text-center text-xs text-gray-400 mt-4">© 2025 Hospital Safety Report System</p>
-            </div>
-
-            <!-- 📊 View 2: Dashboard Section -->
-            <div id="view-dashboard" class="hidden p-4 md:p-8 animate-fade-in h-full flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="font-bold text-xl text-gray-800">สรุปภาพรวม</h3>
-                        <p class="text-xs text-gray-500">ข้อมูลตามตัวกรองปัจจุบัน</p>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-600 mb-2">HN ผู้ป่วย</label>
+                  <div class="relative flex items-center">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fa-regular fa-id-card text-gray-400"></i>
                     </div>
-                    <button onclick="loadDashboardData()"
-                        class="text-sm bg-blue-50 border border-blue-100 px-4 py-2 rounded-full shadow-sm text-blue-600 hover:bg-blue-100 font-bold transition-all flex items-center gap-2 active:scale-95">
-                        <i class="fa-solid fa-rotate"></i> อัปเดตข้อมูล
+                    <input type="text" id="hnInput" name="hn" placeholder="ระบุเลข HN" required 
+                           class="w-full pl-10 pr-12 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm font-medium text-gray-700 shadow-sm">
+                    <!-- ✅ ปุ่มสแกน Barcode -->
+                    <button type="button" onclick="startScanner()" class="absolute right-2 p-2 text-gray-400 hover:text-blue-600 transition-colors" title="สแกน Barcode">
+                        <i class="fa-solid fa-qrcode text-xl"></i>
                     </button>
+                  </div>
                 </div>
+              </div>
 
-                <div class="mb-6">
-                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-1 shadow-md">
-                        <div class="bg-white rounded-xl p-4 flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">จำนวนรายงาน
-                                    (ตามตัวกรอง)</p>
-                                <h2 class="text-3xl font-extrabold text-gray-800 mt-1" id="totalCount">0</h2>
-                                <p class="text-xs text-gray-400">รายการ</p>
-                            </div>
-                            <div
-                                class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center text-blue-600 text-xl shadow-sm">
-                                <i class="fa-solid fa-file-medical"></i>
-                            </div>
-                        </div>
+              <!-- Row 2: Button Selection -->
+              <div class="mb-6">
+                <p class="text-center text-sm font-semibold text-gray-500 mb-4">เลือกประเภทความคลาดเคลื่อน</p>
+                <input type="hidden" name="meType" id="meType">
+                
+                <div class="grid grid-cols-3 gap-4">
+                  <button type="button" onclick="selectType('แพ้ยาซ้ำ', 1, this)" 
+                          class="btn-type group relative bg-white border-2 border-gray-100 hover:border-teal-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 h-28 shadow-sm hover:bg-teal-50">
+                    <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                      <i class="fa-solid fa-pills"></i>
                     </div>
+                    <span class="font-bold text-gray-600 group-hover:text-teal-700 text-sm">แพ้ยาซ้ำ</span>
+                    <div class="checkmark"><i class="fa-solid fa-check text-xs"></i></div>
+                  </button>
+
+                  <button type="button" onclick="selectType('จ่ายยาผิดคน', 2, this)" 
+                          class="btn-type group relative bg-white border-2 border-gray-100 hover:border-pink-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 h-28 shadow-sm hover:bg-pink-50">
+                    <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                      <i class="fa-solid fa-user-xmark"></i>
+                    </div>
+                    <span class="font-bold text-gray-600 group-hover:text-pink-700 text-sm">ผิดคน</span>
+                    <div class="checkmark"><i class="fa-solid fa-check text-xs"></i></div>
+                  </button>
+
+                  <button type="button" onclick="selectType('ME ระดับ E ขึ้นไป', 3, this)" 
+                          class="btn-type group relative bg-white border-2 border-gray-100 hover:border-orange-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 h-28 shadow-sm hover:bg-orange-50">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                      <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <span class="font-bold text-gray-600 group-hover:text-orange-700 text-sm">ระดับ E+</span>
+                    <div class="checkmark"><i class="fa-solid fa-check text-xs"></i></div>
+                  </button>
                 </div>
+              </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div
-                        class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                        <h4 class="text-sm font-bold text-gray-600 mb-4 flex items-center gap-2">
-                            <span class="w-2 h-6 bg-teal-400 rounded-full"></span> สัดส่วนความเสี่ยง (%)
-                        </h4>
-                        <div class="h-48 relative flex justify-center">
-                            <canvas id="typeChart"></canvas>
-                        </div>
-                    </div>
-                    <div
-                        class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                        <h4 class="text-sm font-bold text-gray-600 mb-4 flex items-center gap-2">
-                            <span class="w-2 h-6 bg-red-400 rounded-full"></span> ระดับความรุนแรง
-                        </h4>
-                        <div class="h-48 relative">
-                            <canvas id="severityChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Table Section -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col">
-                    <div
-                        class="p-4 border-b bg-gray-50/50 flex flex-col md:flex-row justify-between items-center gap-3">
-                        <h4 class="font-bold text-gray-700 flex items-center gap-2">
-                            <i class="fa-solid fa-list-ul text-blue-500"></i> รายการบันทึก
-                        </h4>
-                        <div class="flex gap-2 w-full md:w-auto">
-                            <div class="relative flex-1">
-                                <i
-                                    class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchInput" placeholder="ค้นหา..."
-                                    class="text-sm border border-gray-200 rounded-lg pl-8 pr-2 py-1.5 w-full focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
-                                    onkeyup="applyTableFilters()">
-                            </div>
-                            <button onclick="exportToExcel()"
-                                class="bg-green-500 hover:bg-green-600 text-white text-xs px-4 py-1.5 rounded-lg flex items-center gap-1 shadow transition-all active:scale-95 font-bold">
-                                <i class="fa-solid fa-file-excel"></i> Export
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Compact Filters -->
-                    <div class="p-3 grid grid-cols-2 md:grid-cols-4 gap-3 bg-white text-xs border-b">
-                        <div class="flex flex-col gap-1">
-                            <span class="text-gray-400 font-bold">เริ่ม</span>
-                            <input type="date" id="filterStartDate" class="border rounded-lg p-1.5 bg-gray-50"
-                                onchange="applyTableFilters()">
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-gray-400 font-bold">ถึง</span>
-                            <input type="date" id="filterEndDate" class="border rounded-lg p-1.5 bg-gray-50"
-                                onchange="applyTableFilters()">
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-gray-400 font-bold">ประเภท</span>
-                            <select id="filterType" class="border rounded-lg p-1.5 bg-gray-50"
-                                onchange="applyTableFilters()">
-                                <option value="">ทั้งหมด</option>
-                                <option value="แพ้ยาซ้ำ">แพ้ยาซ้ำ</option>
-                                <option value="จ่ายยาผิดคน">จ่ายยาผิดคน</option>
-                                <option value="ME ระดับ E ขึ้นไป">ระดับ E+</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-gray-400 font-bold">ความรุนแรง</span>
-                            <select id="filterSeverity" class="border rounded-lg p-1.5 bg-gray-50"
-                                onchange="applyTableFilters()">
-                                <option value="">ทั้งหมด</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="E">E</option>
-                                <option value="F">F</option>
-                                <option value="G">G</option>
-                                <option value="H">H</option>
-                                <option value="I">I</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="overflow-auto flex-1 relative">
-                        <table class="w-full text-sm text-left text-gray-600">
-                            <thead class="text-xs text-gray-500 uppercase bg-gray-50 sticky top-0 z-10">
-                                <tr>
-                                    <th class="px-4 py-3 font-bold">วันที่</th>
-                                    <th class="px-4 py-3 font-bold">HN</th>
-                                    <th class="px-4 py-3 font-bold">ประเภท</th>
-                                    <th class="px-4 py-3 font-bold">รายละเอียด</th>
-                                    <th class="px-4 py-3 font-bold text-center">ระดับ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody" class="bg-white divide-y divide-gray-100">
-                                <tr>
-                                    <td colspan="5" class="text-center py-8 text-gray-400">รอการโหลดข้อมูล...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="p-3 bg-white border-t flex justify-between items-center text-xs text-gray-500">
-                        <button onclick="changePage(-1)"
-                            class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 disabled:opacity-50">«
-                            ก่อนหน้า</button>
-                        <span id="pageIndicator" class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-md">1 /
-                            1</span>
-                        <button onclick="changePage(1)"
-                            class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 disabled:opacity-50">ถัดไป »</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- 🔍 Modal Details -->
-    <div id="detailModal"
-        class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center z-[10000] transition-opacity duration-300 p-4">
-        <div
-            class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-popup transform scale-100 transition-transform relative">
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-5 flex justify-between items-center">
-                <h3 class="text-white font-bold text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-circle-info text-white/80"></i> รายละเอียด
-                </h3>
-                <button onclick="closeModal()"
-                    class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-all">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-6 space-y-5">
-                <div class="flex gap-4">
-                    <div class="w-1/2 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">วันที่เกิดเหตุ</label>
-                        <p id="modalDate" class="text-gray-800 font-bold text-base"></p>
-                    </div>
-                    <div class="w-1/2 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">HN ผู้ป่วย</label>
-                        <p id="modalHN" class="text-gray-800 font-bold text-base"></p>
-                    </div>
+              <!-- Hidden Details Section -->
+              <div id="detailSection" class="hidden space-y-5 border-t border-dashed border-gray-200 pt-5 animate-fade-in">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-600 mb-2">รายละเอียด <span class="text-red-400">*</span></label>
+                  <textarea name="meDetails" id="meDetails" rows="3" required
+                            class="w-full p-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm text-gray-700 resize-none shadow-sm"
+                            placeholder="รายละเอียดเพิ่มเติม"></textarea>
                 </div>
 
                 <div>
-                    <label
-                        class="block text-[10px] font-bold text-gray-400 uppercase mb-2">ประเภทความคลาดเคลื่อน</label>
-                    <span id="modalType"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-sm transition-colors"></span>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">ระดับความรุนแรง</label>
-                    <div class="bg-red-50 border-l-4 border-red-400 rounded-r-lg p-3">
-                        <p id="modalSeverity" class="text-red-700 font-bold text-sm"></p>
+                  <label class="block text-sm font-semibold text-gray-600 mb-2">ระดับความรุนแรง <span class="text-red-400">*</span></label>
+                  <div class="relative">
+                    <select name="severity" id="severity" required
+                            class="w-full p-3 pl-4 pr-10 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all outline-none text-sm font-medium text-gray-700 appearance-none shadow-sm cursor-pointer">
+                      <option value="">-- เลือกระดับความรุนแรง --</option>
+                      <option value="A">【 A 】 มีโอกาสเกิด แต่ยังไม่เกิด</option>
+                      <option value="B">【 B 】 เกิดแล้ว แต่ไม่ถึงผู้ป่วย</option>
+                      <option value="C">【 C 】 ถึงผู้ป่วย แต่ไม่เป็นอันตราย</option>
+                      <option value="D">【 D 】 ถึงผู้ป่วย ต้องเฝ้าระวัง</option>
+                      <option value="E">【 E 】 เป็นอันตรายชั่วคราว/ต้องรักษา</option>
+                      <option value="F">【 F 】 ต้องนอน รพ./ยืดเวลานอน รพ.</option>
+                      <option value="G">【 G 】 เป็นอันตรายถาวร</option>
+                      <option value="H">【 H 】 ต้องกู้ชีพ/ช่วยชีวิต</option>
+                      <option value="I">【 I 】 เสียชีวิต</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
+                      <i class="fa-solid fa-chevron-down text-xs"></i>
                     </div>
+                  </div>
                 </div>
 
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">รายละเอียดเพิ่มเติม</label>
-                    <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 max-h-32 overflow-y-auto text-sm text-gray-600 leading-relaxed"
-                        id="modalDetails"></div>
+                <div class="flex gap-3 pt-4">
+                   <button type="button" onclick="resetForm()" class="flex-1 py-3 rounded-full border border-gray-300 text-gray-500 font-bold hover:bg-gray-50 hover:text-gray-700 transition-all">ยกเลิก</button>
+                   <button type="submit" class="flex-[2] py-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all active:scale-95">บันทึกข้อมูล</button>
                 </div>
-            </div>
+              </div>
+            </form>
+          </div>
         </div>
-    </div>
+        <p class="text-center text-xs text-gray-400 mt-4">© 2025 Hospital Safety Report System</p>
+      </div>
 
-    <!-- 📸 Scanner Modal (เพิ่มใหม่) -->
-    <div id="scannerModal"
-        class="hidden fixed inset-0 bg-gray-900/90 backdrop-blur-sm flex justify-center items-center z-[10001]">
-        <div class="bg-white w-full max-w-md m-4 rounded-3xl shadow-2xl overflow-hidden relative flex flex-col">
-            <div class="bg-gray-800 p-4 flex justify-between items-center">
-                <h3 class="text-white font-bold flex items-center gap-2"><i class="fa-solid fa-qrcode"></i> สแกน HN</h3>
-                <button onclick="stopScanner()"
-                    class="text-gray-400 hover:text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i
-                        class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="p-0 bg-black relative flex-1 min-h-[300px] flex items-center justify-center overflow-hidden">
-                <!-- ตัวอ่านกล้อง -->
-                <div id="reader" class="w-full h-full object-cover"></div>
-
-                <!-- กรอบเล็ง -->
-                <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
-                    <div class="w-64 h-40 border-2 border-teal-400/80 rounded-xl relative">
-                        <div class="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-teal-400 -mt-1 -ml-1">
-                        </div>
-                        <div class="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-teal-400 -mt-1 -mr-1">
-                        </div>
-                        <div class="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-teal-400 -mb-1 -ml-1">
-                        </div>
-                        <div
-                            class="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-teal-400 -mb-1 -mr-1">
-                        </div>
-                        <!-- เส้นสแกนวิ่ง -->
-                        <div
-                            class="absolute top-0 left-0 w-full h-0.5 bg-red-500/80 shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-[scan_2s_infinite]">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4 bg-white text-center">
-                <p class="text-sm text-gray-600">วาง Barcode หรือ QR Code ให้อยู่ในกรอบ</p>
-            </div>
+      <!-- 📊 View 2: Dashboard Section -->
+      <div id="view-dashboard" class="hidden p-4 md:p-8 animate-fade-in h-full flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+           <div>
+             <h3 class="font-bold text-xl text-gray-800">สรุปภาพรวม</h3>
+             <p class="text-xs text-gray-500">ข้อมูลตามตัวกรองปัจจุบัน</p>
+           </div>
+           <button onclick="loadDashboardData()" class="text-sm bg-blue-50 border border-blue-100 px-4 py-2 rounded-full shadow-sm text-blue-600 hover:bg-blue-100 font-bold transition-all flex items-center gap-2 active:scale-95">
+             <i class="fa-solid fa-rotate"></i> อัปเดตข้อมูล
+           </button>
         </div>
-    </div>
 
-    <!-- ✨ Loading Overlay -->
-    <div id="loading"
-        class="hidden fixed inset-0 bg-white/80 backdrop-blur-md flex flex-col justify-center items-center z-[9999]">
-        <div class="relative flex justify-center items-center mb-6">
-            <div class="absolute animate-ping inline-flex h-20 w-20 rounded-full bg-blue-400 opacity-20"></div>
-            <div class="relative animate-spin rounded-full h-16 w-16 border-4 border-blue-100 border-t-blue-500"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-500 text-xl">
-                <i class="fa-solid fa-bolt"></i>
+        <div class="mb-6">
+          <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-1 shadow-md">
+            <div class="bg-white rounded-xl p-4 flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">จำนวนรายงาน (ตามตัวกรอง)</p>
+                <h2 class="text-3xl font-extrabold text-gray-800 mt-1" id="totalCount">0</h2>
+                <p class="text-xs text-gray-400">รายการ</p>
+              </div>
+              <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center text-blue-600 text-xl shadow-sm">
+                <i class="fa-solid fa-file-medical"></i>
+              </div>
             </div>
+          </div>
         </div>
-        <p class="text-gray-600 font-bold text-lg animate-pulse">กำลังประมวลผล...</p>
-    </div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxxkzC39WEGxTmY7IbK6ZHJb2RUcSs4hRP7uspjgk8cxSOgCb1v5aNIvfCfngbXMw6x/exec";
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <h4 class="text-sm font-bold text-gray-600 mb-4 flex items-center gap-2">
+              <span class="w-2 h-6 bg-teal-400 rounded-full"></span> สัดส่วนความเสี่ยง (%)
+            </h4>
+            <div class="h-48 relative flex justify-center">
+               <canvas id="typeChart"></canvas>
+            </div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <h4 class="text-sm font-bold text-gray-600 mb-4 flex items-center gap-2">
+              <span class="w-2 h-6 bg-red-400 rounded-full"></span> ระดับความรุนแรง
+            </h4>
+            <div class="h-48 relative">
+               <canvas id="severityChart"></canvas>
+            </div>
+          </div>
+        </div>
 
-        let allRecords = [];
-        let filteredRecords = [];
-        let currentPage = 1;
-        const rowsPerPage = 15;
-        let isDashboardLoaded = false;
-        let html5QrcodeScanner = null; // ตัวแปรสำหรับ Scanner
+        <!-- Table Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col">
+          <div class="p-4 border-b bg-gray-50/50 flex flex-col md:flex-row justify-between items-center gap-3">
+              <h4 class="font-bold text-gray-700 flex items-center gap-2">
+                <i class="fa-solid fa-list-ul text-blue-500"></i> รายการบันทึก
+              </h4>
+              <div class="flex gap-2 w-full md:w-auto">
+                  <div class="relative flex-1">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input type="text" id="searchInput" placeholder="ค้นหา..." class="text-sm border border-gray-200 rounded-lg pl-8 pr-2 py-1.5 w-full focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none" onkeyup="applyTableFilters()">
+                  </div>
+                  <button onclick="exportToExcel()" class="bg-green-500 hover:bg-green-600 text-white text-xs px-4 py-1.5 rounded-lg flex items-center gap-1 shadow transition-all active:scale-95 font-bold">
+                      <i class="fa-solid fa-file-excel"></i> Export
+                  </button>
+              </div>
+          </div>
+          
+          <!-- Compact Filters -->
+          <div class="p-3 grid grid-cols-2 md:grid-cols-4 gap-3 bg-white text-xs border-b">
+             <div class="flex flex-col gap-1">
+               <span class="text-gray-400 font-bold">เริ่ม</span>
+               <input type="date" id="filterStartDate" class="border rounded-lg p-1.5 bg-gray-50" onchange="applyTableFilters()">
+             </div>
+             <div class="flex flex-col gap-1">
+               <span class="text-gray-400 font-bold">ถึง</span>
+               <input type="date" id="filterEndDate" class="border rounded-lg p-1.5 bg-gray-50" onchange="applyTableFilters()">
+             </div>
+             <div class="flex flex-col gap-1">
+               <span class="text-gray-400 font-bold">ประเภท</span>
+               <select id="filterType" class="border rounded-lg p-1.5 bg-gray-50" onchange="applyTableFilters()">
+                 <option value="">ทั้งหมด</option>
+                 <option value="แพ้ยาซ้ำ">แพ้ยาซ้ำ</option>
+                 <option value="จ่ายยาผิดคน">จ่ายยาผิดคน</option>
+                 <option value="ME ระดับ E ขึ้นไป">ระดับ E+</option>
+               </select>
+             </div>
+             <div class="flex flex-col gap-1">
+               <span class="text-gray-400 font-bold">ความรุนแรง</span>
+               <select id="filterSeverity" class="border rounded-lg p-1.5 bg-gray-50" onchange="applyTableFilters()">
+                 <option value="">ทั้งหมด</option>
+                 <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                 <option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option>
+               </select>
+             </div>
+          </div>
 
-        // ... (SwitchTab function remains same)
-        function switchTab(tabName) {
-            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('tab-form').className = "px-6 py-2 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition-all";
-            document.getElementById('tab-dashboard').className = "px-6 py-2 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition-all";
-            document.getElementById('tab-' + tabName).className = "px-6 py-2 rounded-full text-sm font-bold transition-all shadow bg-white text-blue-600";
-            document.getElementById('view-' + tabName).classList.remove('hidden');
-            if (tabName === 'dashboard' && !isDashboardLoaded) {
-                loadDashboardData();
-                isDashboardLoaded = true;
+          <div class="overflow-auto flex-1 relative">
+              <table class="w-full text-sm text-left text-gray-600">
+                  <thead class="text-xs text-gray-500 uppercase bg-gray-50 sticky top-0 z-10">
+                      <tr>
+                          <th class="px-4 py-3 font-bold">วันที่</th>
+                          <th class="px-4 py-3 font-bold">HN</th>
+                          <th class="px-4 py-3 font-bold">ประเภท</th>
+                          <th class="px-4 py-3 font-bold">รายละเอียด</th>
+                          <th class="px-4 py-3 font-bold text-center">ระดับ</th>
+                      </tr>
+                  </thead>
+                  <tbody id="tableBody" class="bg-white divide-y divide-gray-100">
+                      <tr><td colspan="5" class="text-center py-8 text-gray-400">รอการโหลดข้อมูล...</td></tr>
+                  </tbody>
+              </table>
+          </div>
+
+          <div class="p-3 bg-white border-t flex justify-between items-center text-xs text-gray-500">
+              <button onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 disabled:opacity-50">« ก่อนหน้า</button>
+              <span id="pageIndicator" class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-md">1 / 1</span>
+              <button onclick="changePage(1)" class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 disabled:opacity-50">ถัดไป »</button>
+          </div>
+        </div>
+      </div>
+
+    </div> 
+  </div>
+
+  <!-- 🔍 Modal Details -->
+  <div id="detailModal" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center z-[10000] transition-opacity duration-300 p-4">
+      <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-popup transform scale-100 transition-transform relative">
+          <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-5 flex justify-between items-center">
+              <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                  <i class="fa-solid fa-circle-info text-white/80"></i> รายละเอียด
+              </h3>
+              <button onclick="closeModal()" class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-all">
+                  <i class="fa-solid fa-xmark"></i>
+              </button>
+          </div>
+          <div class="p-6 space-y-5">
+              <div class="flex gap-4">
+                  <div class="w-1/2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                      <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">วันที่เกิดเหตุ</label>
+                      <p id="modalDate" class="text-gray-800 font-bold text-base"></p>
+                  </div>
+                  <div class="w-1/2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                      <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">HN ผู้ป่วย</label>
+                      <p id="modalHN" class="text-gray-800 font-bold text-base"></p>
+                  </div>
+              </div>
+              
+              <div>
+                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">ประเภทความคลาดเคลื่อน</label>
+                  <span id="modalType" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-sm transition-colors"></span>
+              </div>
+              
+              <div>
+                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">ระดับความรุนแรง</label>
+                  <div class="bg-red-50 border-l-4 border-red-400 rounded-r-lg p-3">
+                      <p id="modalSeverity" class="text-red-700 font-bold text-sm"></p>
+                  </div>
+              </div>
+              
+              <div>
+                  <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">รายละเอียดเพิ่มเติม</label>
+                  <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 max-h-32 overflow-y-auto text-sm text-gray-600 leading-relaxed" id="modalDetails"></div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- 📸 Scanner Modal (ปรับปรุง) -->
+  <div id="scannerModal" class="hidden fixed inset-0 bg-gray-900/90 backdrop-blur-sm flex justify-center items-center z-[10001]">
+      <div class="bg-white w-full max-w-md m-4 rounded-3xl shadow-2xl overflow-hidden relative flex flex-col">
+          <div class="bg-gray-800 p-4 flex justify-between items-center">
+              <h3 class="text-white font-bold flex items-center gap-2"><i class="fa-solid fa-qrcode"></i> สแกน HN</h3>
+              <button onclick="stopScanner()" class="text-gray-400 hover:text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+          </div>
+          <!-- พื้นที่กล้อง -->
+          <div class="p-0 bg-black relative flex-1 min-h-[300px] flex items-center justify-center overflow-hidden bg-black">
+              <div id="reader" class="w-full h-full bg-black"></div>
+              
+              <!-- กรอบเล็ง (Overlay) -->
+              <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                  <div class="w-64 h-32 border-2 border-teal-400/80 rounded-xl relative">
+                      <div class="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-teal-400 -mt-1 -ml-1"></div>
+                      <div class="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-teal-400 -mt-1 -mr-1"></div>
+                      <div class="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-teal-400 -mb-1 -ml-1"></div>
+                      <div class="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-teal-400 -mb-1 -mr-1"></div>
+                      <div class="absolute top-0 left-0 w-full h-0.5 bg-red-500/80 shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-[scan_2s_infinite]"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="p-4 bg-white text-center">
+              <p class="text-sm text-gray-600">วาง Barcode หรือ QR Code ให้อยู่ในกรอบ</p>
+          </div>
+      </div>
+  </div>
+
+  <!-- ✨ Loading Overlay -->
+  <div id="loading" class="hidden fixed inset-0 bg-white/80 backdrop-blur-md flex flex-col justify-center items-center z-[9999]">
+      <div class="relative flex justify-center items-center mb-6">
+          <div class="absolute animate-ping inline-flex h-20 w-20 rounded-full bg-blue-400 opacity-20"></div>
+          <div class="relative animate-spin rounded-full h-16 w-16 border-4 border-blue-100 border-t-blue-500"></div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-500 text-xl">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+      </div>
+      <p class="text-gray-600 font-bold text-lg animate-pulse">กำลังประมวลผล...</p>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxxkzC39WEGxTmY7IbK6ZHJb2RUcSs4hRP7uspjgk8cxSOgCb1v5aNIvfCfngbXMw6x/exec";
+
+    let allRecords = [];
+    let filteredRecords = [];
+    let currentPage = 1;
+    const rowsPerPage = 15;
+    let isDashboardLoaded = false;
+    
+    // ✅ เปลี่ยนมาใช้ตัวแปรสำหรับ Html5Qrcode (ไม่ใช่ Scanner)
+    let html5QrCode = null; 
+
+    function switchTab(tabName) {
+      document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('tab-form').className = "px-6 py-2 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition-all";
+      document.getElementById('tab-dashboard').className = "px-6 py-2 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition-all";
+      document.getElementById('tab-' + tabName).className = "px-6 py-2 rounded-full text-sm font-bold transition-all shadow bg-white text-blue-600";
+      document.getElementById('view-' + tabName).classList.remove('hidden');
+      if(tabName === 'dashboard' && !isDashboardLoaded) {
+          loadDashboardData();
+          isDashboardLoaded = true;
+      }
+    }
+
+    document.querySelector('input[type="date"]').valueAsDate = new Date();
+    
+    function selectType(typeName, typeId, btn) {
+      document.getElementById('meType').value = typeName;
+      document.querySelectorAll('.btn-type').forEach(b => {
+         b.classList.remove('selected', 'border-teal-400', 'bg-teal-50', 'border-pink-400', 'bg-pink-50', 'border-orange-400', 'bg-orange-50');
+         b.classList.add('bg-white', 'border-gray-100');
+      });
+      btn.classList.remove('bg-white', 'border-gray-100');
+      btn.classList.add('selected');
+      if(typeId === 1) btn.classList.add('border-teal-400', 'bg-teal-50');
+      else if(typeId === 2) btn.classList.add('border-pink-400', 'bg-pink-50');
+      else if(typeId === 3) btn.classList.add('border-orange-400', 'bg-orange-50');
+      document.getElementById('detailSection').classList.remove('hidden');
+      const detailInput = document.getElementById('meDetails');
+      detailInput.value = "";
+      detailInput.placeholder = "รายละเอียดเพิ่มเติม";
+      detailInput.focus();
+    }
+
+    function resetForm() {
+      document.getElementById('meForm').reset();
+      document.getElementById('detailSection').classList.add('hidden');
+      document.querySelector('input[type="date"]').valueAsDate = new Date();
+      document.querySelectorAll('.btn-type').forEach(b => {
+         b.classList.remove('selected', 'border-teal-400', 'bg-teal-50', 'border-pink-400', 'bg-pink-50', 'border-orange-400', 'bg-orange-50');
+         b.classList.add('bg-white', 'border-gray-100');
+      });
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const meType = document.getElementById('meType').value;
+      const severity = document.getElementById('severity').value;
+      if(!meType) { Swal.fire('แจ้งเตือน', 'กรุณาเลือกประเภทความคลาดเคลื่อน', 'warning'); return; }
+      if(!severity) { Swal.fire('แจ้งเตือน', 'กรุณาเลือกระดับความรุนแรง', 'warning'); return; }
+      document.getElementById('loading').classList.remove('hidden');
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      data.action = 'save';
+      fetch(API_URL, { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "text/plain" } })
+      .then(response => response.json())
+      .then(result => {
+        document.getElementById('loading').classList.add('hidden');
+        if(result.status === 'success') {
+          Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: 'ข้อมูลถูกส่งเรียบร้อยแล้ว', timer: 1500, showConfirmButton: false, backdrop: `rgba(0,0,123,0.1)` }).then(() => resetForm());
+        } else {
+          Swal.fire('Error', 'บันทึกไม่สำเร็จ', 'error');
+        }
+      })
+      .catch(error => {
+        document.getElementById('loading').classList.add('hidden');
+        Swal.fire('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+      });
+    }
+
+    // --- 📸 Improved Scanner Logic (Html5Qrcode Direct API) ---
+    function startScanner() {
+        document.getElementById('scannerModal').classList.remove('hidden');
+        
+        // เริ่มกล้องด้วยความหน่วงเล็กน้อยเพื่อให้ UI พร้อม
+        setTimeout(() => {
+            if (html5QrCode === null) {
+                html5QrCode = new Html5Qrcode("reader");
             }
-        }
 
-        document.querySelector('input[type="date"]').valueAsDate = new Date();
-
-        function selectType(typeName, typeId, btn) {
-            document.getElementById('meType').value = typeName;
-            document.querySelectorAll('.btn-type').forEach(b => {
-                b.classList.remove('selected', 'border-teal-400', 'bg-teal-50', 'border-pink-400', 'bg-pink-50', 'border-orange-400', 'bg-orange-50');
-                b.classList.add('bg-white', 'border-gray-100');
+            const config = { 
+                fps: 10, 
+                qrbox: { width: 250, height: 150 },
+                aspectRatio: 1.0
+            };
+            
+            // สั่งเปิดกล้องหลังโดยตรง (environment)
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+            .catch(err => {
+                console.error("Error starting scanner", err);
+                Swal.fire('Error', 'ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการเข้าถึงกล้อง', 'error');
+                stopScanner();
             });
-            btn.classList.remove('bg-white', 'border-gray-100');
-            btn.classList.add('selected');
-            if (typeId === 1) btn.classList.add('border-teal-400', 'bg-teal-50');
-            else if (typeId === 2) btn.classList.add('border-pink-400', 'bg-pink-50');
-            else if (typeId === 3) btn.classList.add('border-orange-400', 'bg-orange-50');
-            document.getElementById('detailSection').classList.remove('hidden');
-            const detailInput = document.getElementById('meDetails');
-            detailInput.value = "";
-            detailInput.placeholder = "รายละเอียดเพิ่มเติม";
-            detailInput.focus();
-        }
+        }, 100);
+    }
 
-        function resetForm() {
-            document.getElementById('meForm').reset();
-            document.getElementById('detailSection').classList.add('hidden');
-            document.querySelector('input[type="date"]').valueAsDate = new Date();
-            document.querySelectorAll('.btn-type').forEach(b => {
-                b.classList.remove('selected', 'border-teal-400', 'bg-teal-50', 'border-pink-400', 'bg-pink-50', 'border-orange-400', 'bg-orange-50');
-                b.classList.add('bg-white', 'border-gray-100');
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+        document.getElementById('hnInput').value = decodedText;
+        stopScanner();
+        
+        const Toast = Swal.mixin({
+          toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true,
+          didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); }
+        });
+        Toast.fire({ icon: 'success', title: 'อ่านรหัสสำเร็จ: ' + decodedText });
+    }
+
+    function onScanFailure(error) {
+        // console.warn(`Code scan error = ${error}`);
+    }
+
+    function stopScanner() {
+        document.getElementById('scannerModal').classList.add('hidden');
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+                // อย่าเพิ่ง set null เพื่อเก็บ instance ไว้ใช้ซ้ำได้ถ้าต้องการ หรือจะสร้างใหม่ก็ได้
+            }).catch(err => {
+                console.log("Failed to stop scanner", err);
             });
         }
+    }
 
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            const meType = document.getElementById('meType').value;
-            const severity = document.getElementById('severity').value;
-            if (!meType) { Swal.fire('แจ้งเตือน', 'กรุณาเลือกประเภทความคลาดเคลื่อน', 'warning'); return; }
-            if (!severity) { Swal.fire('แจ้งเตือน', 'กรุณาเลือกระดับความรุนแรง', 'warning'); return; }
+    // ... (Dashboard functions remain same) ...
+    function loadDashboardData() {
+      document.getElementById('loading').classList.remove('hidden');
+      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: 'getRecords' }), headers: { "Content-Type": "text/plain" } })
+        .then(response => response.json())
+        .then(result => {
+           allRecords = result.data || [];
+           applyTableFilters();
+           document.getElementById('loading').classList.add('hidden');
+           const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true });
+           Toast.fire({ icon: 'success', title: 'ข้อมูลล่าสุด' });
+        })
+        .catch(err => {
+           console.error(err);
+           document.getElementById('loading').classList.add('hidden');
+        });
+    }
 
-            document.getElementById('loading').classList.remove('hidden');
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            data.action = 'save';
+    function updateDashboardStats(records) {
+        document.getElementById('totalCount').textContent = records.length;
+        const typeCounts = {};
+        const nameMapping = { 'แพ้ยาซ้ำ': 'แพ้ยาซ้ำ', 'จ่ายยาผิดคน': 'ผิดคน', 'ME ระดับ E ขึ้นไป': 'ระดับ E+' };
+        records.forEach(r => {
+            const rawType = r.meType;
+            const shortName = nameMapping[rawType] || rawType;
+            typeCounts[shortName] = (typeCounts[shortName] || 0) + 1;
+        });
+        const severityCounts = {};
+        records.forEach(r => {
+            const sev = (r.severity || "").split(' ')[0];
+            if(sev) severityCounts[sev] = (severityCounts[sev] || 0) + 1;
+        });
+        const sortedSevKeys = Object.keys(severityCounts).sort();
+        const sortedSevCounts = {};
+        sortedSevKeys.forEach(k => sortedSevCounts[k] = severityCounts[k]);
+        renderCharts({ typeCounts: typeCounts, severityCounts: sortedSevCounts, total: records.length });
+    }
 
-            fetch(API_URL, { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "text/plain" } })
-                .then(response => response.json())
-                .then(result => {
-                    document.getElementById('loading').classList.add('hidden');
-                    if (result.status === 'success') {
-                        Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: 'ข้อมูลถูกส่งเรียบร้อยแล้ว', timer: 1500, showConfirmButton: false, backdrop: `rgba(0,0,123,0.1)` }).then(() => resetForm());
-                    } else {
-                        Swal.fire('Error', 'บันทึกไม่สำเร็จ', 'error');
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('loading').classList.add('hidden');
-                    Swal.fire('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-                });
-        }
-
-        // --- 📸 Scanner Logic ---
-        function startScanner() {
-            document.getElementById('scannerModal').classList.remove('hidden');
-
-            // ถ้ายังไม่เคยสร้าง Scanner ให้สร้างใหม่
-            if (html5QrcodeScanner === null) {
-                // ใช้ Html5QrcodeScanner เพื่อความง่าย (มี UI เลือกกล้องในตัวถ้าต้องการ)
-                // หรือใช้ Html5Qrcode เพื่อ Custom เอง (ในที่นี้ใช้ Scanner แต่ซ่อน UI บางส่วนด้วย CSS ได้)
-                html5QrcodeScanner = new Html5QrcodeScanner(
-                    "reader",
-                    {
-                        fps: 10,
-                        qrbox: { width: 250, height: 150 }, // ขนาดกรอบสแกน (แนวนอนเหมาะกับ Barcode)
-                        aspectRatio: 1.0,
-                        rememberLastUsedCamera: true
-                    },
-                /* verbose= */ false
-                );
-
-                // เริ่มการสแกน
-                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    let myTypeChart, mySevChart;
+    function renderCharts(data) {
+      const typeLabels = Object.keys(data.typeCounts).map(label => {
+          const value = data.typeCounts[label];
+          const percent = data.total > 0 ? ((value / data.total) * 100).toFixed(1) : 0;
+          return `${label} (${percent}%)`;
+      });
+      const ctxType = document.getElementById('typeChart').getContext('2d');
+      if(myTypeChart) myTypeChart.destroy();
+      myTypeChart = new Chart(ctxType, {
+        type: 'doughnut',
+        data: {
+          labels: typeLabels, 
+          datasets: [{ 
+            data: Object.values(data.typeCounts), 
+            backgroundColor: ['#2dd4bf', '#f472b6', '#fb923c', '#818cf8', '#94a3b8'],
+            borderColor: '#ffffff', borderWidth: 3, hoverOffset: 15, hoverBorderColor: '#ffffff', hoverBorderWidth: 0
+          }]
+        },
+        options: { 
+          responsive: true, maintainAspectRatio: false, cutout: '65%',
+          plugins: { 
+            legend: { position: 'right', labels: { usePointStyle: true, padding: 20, font: { family: 'Sarabun', size: 12 } } },
+            tooltip: {
+              backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true,
+              callbacks: { label: function(context) { return ' ' + context.raw + ' รายการ'; } }
             }
+          }, animation: { animateScale: true, animateRotate: true }
         }
+      });
 
-        function onScanSuccess(decodedText, decodedResult) {
-            // เมื่อสแกนเจอ
-            console.log(`Scan result: ${decodedText}`, decodedResult);
+      const ctxSev = document.getElementById('severityChart').getContext('2d');
+      const gradientBlue = ctxSev.createLinearGradient(0, 0, 0, 400);
+      gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 1)'); gradientBlue.addColorStop(1, 'rgba(147, 197, 253, 0.3)');
+      const gradientRed = ctxSev.createLinearGradient(0, 0, 0, 400);
+      gradientRed.addColorStop(0, 'rgba(239, 68, 68, 1)'); gradientRed.addColorStop(1, 'rgba(252, 165, 165, 0.3)');
 
-            // ใส่ค่าลงในช่อง HN
-            document.getElementById('hnInput').value = decodedText;
+      if(mySevChart) mySevChart.destroy();
+      const sevLabels = Object.keys(data.severityCounts);
+      const sevData = Object.values(data.severityCounts);
+      const backgroundColors = sevLabels.map(label => { return ['E','F','G','H','I'].some(l => label.startsWith(l)) ? gradientRed : gradientBlue; });
 
-            // ปิด Scanner
-            stopScanner();
-
-            // แจ้งเตือนเล็กน้อย
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-            Toast.fire({
-                icon: 'success',
-                title: 'อ่านรหัสสำเร็จ: ' + decodedText
-            });
+      mySevChart = new Chart(ctxSev, {
+        type: 'bar',
+        data: {
+          labels: sevLabels,
+          datasets: [{ 
+            label: 'จำนวน', data: sevData, backgroundColor: backgroundColors, borderColor: 'transparent', borderWidth: 0, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.8
+          }]
+        },
+        options: { 
+          responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, displayColors: false, callbacks: { title: function(context) { return 'ระดับความรุนแรง: ' + context[0].label; }, label: function(context) { let value = context.raw; let total = data.total; let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0; return ' ' + value + ' รายการ (' + percentage + '%)'; } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6', borderDash: [4, 4] }, ticks: { font: { family: 'Sarabun' }, stepSize: 1 } }, x: { grid: { display: false }, ticks: { font: { family: 'Sarabun' } } } } 
         }
+      });
+    }
 
-        function onScanFailure(error) {
-            // สแกนไม่เจอ (เงียบไว้ไม่ต้องทำอะไร)
-            // console.warn(`Code scan error = ${error}`);
+    function applyTableFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const filterType = document.getElementById('filterType').value;
+      const filterSev = document.getElementById('filterSeverity').value;
+      const startDate = document.getElementById('filterStartDate').value;
+      const endDate = document.getElementById('filterEndDate').value;
+
+      filteredRecords = allRecords.filter(item => {
+        const matchSearch = (item.hn + item.details).toLowerCase().includes(search);
+        const matchType = filterType === "" || item.meType === filterType;
+        const matchSev = filterSev === "" || (item.severity && item.severity.startsWith(filterSev));
+        let matchDate = true;
+        if (startDate || endDate) {
+            const itemDate = new Date(item.date);
+            if (startDate) matchDate = matchDate && (itemDate >= new Date(startDate));
+            if (endDate) matchDate = matchDate && (itemDate <= new Date(endDate));
         }
+        return matchSearch && matchType && matchSev && matchDate;
+      });
+      updateDashboardStats(filteredRecords);
+      currentPage = 1; renderTable();
+    }
 
-        function stopScanner() {
-            // ซ่อน Modal
-            document.getElementById('scannerModal').classList.add('hidden');
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedItems = filteredRecords.slice(start, end);
+      if (paginatedItems.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-400"><i class="fa-solid fa-folder-open text-2xl mb-2"></i><br>ไม่พบข้อมูล</td></tr>`; document.getElementById('pageIndicator').innerText = `0 / 0`; return; }
+      let html = "";
+      paginatedItems.forEach((item, index) => {
+        let badgeClass = "bg-gray-100 text-gray-600";
+        if(item.severity.startsWith("E") || item.severity.startsWith("F")) badgeClass = "bg-orange-100 text-orange-600";
+        if(item.severity.startsWith("G") || item.severity.startsWith("H") || item.severity.startsWith("I")) badgeClass = "bg-red-100 text-red-600";
+        html += `<tr onclick="openRecordModal(${start + index})" class="hover:bg-blue-50 cursor-pointer group transition-colors border-b border-gray-50 last:border-0"><td class="px-4 py-3 whitespace-nowrap text-gray-500 group-hover:text-blue-600 font-medium">${formatDate(item.date)}</td><td class="px-4 py-3 font-bold text-gray-700">${item.hn}</td><td class="px-4 py-3"><span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-200">${item.meType}</span></td><td class="px-4 py-3 text-xs text-gray-500 truncate max-w-[150px]">${item.details}</td><td class="px-4 py-3 text-center"><span class="${badgeClass} px-2.5 py-0.5 rounded-full text-xs font-extrabold border border-white shadow-sm">${item.severity.split(' ')[0]}</span></td></tr>`;
+      });
+      tbody.innerHTML = html;
+      const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
+      document.getElementById('pageIndicator').innerText = `${currentPage} / ${totalPages}`;
+    }
 
-            // หยุดการทำงานของกล้องและเคลียร์
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear().then(() => {
-                    html5QrcodeScanner = null; // Reset ตัวแปร
-                }).catch(error => {
-                    console.error("Failed to clear html5QrcodeScanner. ", error);
-                    html5QrcodeScanner = null;
-                });
-            }
-        }
+    function openRecordModal(index) {
+        const item = filteredRecords[index];
+        if (!item) return;
+        document.getElementById('modalDate').textContent = formatDate(item.date);
+        document.getElementById('modalHN').textContent = item.hn;
+        const typeSpan = document.getElementById('modalType');
+        typeSpan.textContent = item.meType;
+        typeSpan.className = "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-md";
+        if(item.meType.includes('แพ้')) typeSpan.classList.add('bg-teal-500');
+        else if(item.meType.includes('ผิดคน')) typeSpan.classList.add('bg-pink-500');
+        else typeSpan.classList.add('bg-orange-500');
+        document.getElementById('modalSeverity').textContent = item.severity;
+        document.getElementById('modalDetails').textContent = item.details || "-";
+        document.getElementById('detailModal').classList.remove('hidden');
+    }
 
-        // ... (Dashboard & Chart functions remain same) ...
-        function loadDashboardData() {
-            document.getElementById('loading').classList.remove('hidden');
-            fetch(API_URL, { method: "POST", body: JSON.stringify({ action: 'getRecords' }), headers: { "Content-Type": "text/plain" } })
-                .then(response => response.json())
-                .then(result => {
-                    allRecords = result.data || [];
-                    applyTableFilters();
-                    document.getElementById('loading').classList.add('hidden');
-                    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true });
-                    Toast.fire({ icon: 'success', title: 'ข้อมูลล่าสุด' });
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('loading').classList.add('hidden');
-                });
-        }
-
-        function updateDashboardStats(records) {
-            document.getElementById('totalCount').textContent = records.length;
-            const typeCounts = {};
-            const nameMapping = { 'แพ้ยาซ้ำ': 'แพ้ยาซ้ำ', 'จ่ายยาผิดคน': 'ผิดคน', 'ME ระดับ E ขึ้นไป': 'ระดับ E+' };
-            records.forEach(r => {
-                const rawType = r.meType;
-                const shortName = nameMapping[rawType] || rawType;
-                typeCounts[shortName] = (typeCounts[shortName] || 0) + 1;
-            });
-            const severityCounts = {};
-            records.forEach(r => {
-                const sev = (r.severity || "").split(' ')[0];
-                if (sev) severityCounts[sev] = (severityCounts[sev] || 0) + 1;
-            });
-            const sortedSevKeys = Object.keys(severityCounts).sort();
-            const sortedSevCounts = {};
-            sortedSevKeys.forEach(k => sortedSevCounts[k] = severityCounts[k]);
-            renderCharts({ typeCounts: typeCounts, severityCounts: sortedSevCounts, total: records.length });
-        }
-
-        let myTypeChart, mySevChart;
-        function renderCharts(data) {
-            const typeLabels = Object.keys(data.typeCounts).map(label => {
-                const value = data.typeCounts[label];
-                const percent = data.total > 0 ? ((value / data.total) * 100).toFixed(1) : 0;
-                return `${label} (${percent}%)`;
-            });
-            const ctxType = document.getElementById('typeChart').getContext('2d');
-            if (myTypeChart) myTypeChart.destroy();
-            myTypeChart = new Chart(ctxType, {
-                type: 'doughnut',
-                data: {
-                    labels: typeLabels,
-                    datasets: [{
-                        data: Object.values(data.typeCounts),
-                        backgroundColor: ['#2dd4bf', '#f472b6', '#fb923c', '#818cf8', '#94a3b8'],
-                        borderColor: '#ffffff', borderWidth: 3, hoverOffset: 15, hoverBorderColor: '#ffffff', hoverBorderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '65%',
-                    plugins: {
-                        legend: { position: 'right', labels: { usePointStyle: true, padding: 20, font: { family: 'Sarabun', size: 12 } } },
-                        tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true,
-                            callbacks: { label: function (context) { return ' ' + context.raw + ' รายการ'; } }
-                        }
-                    }, animation: { animateScale: true, animateRotate: true }
-                }
-            });
-
-            const ctxSev = document.getElementById('severityChart').getContext('2d');
-            const gradientBlue = ctxSev.createLinearGradient(0, 0, 0, 400);
-            gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 1)'); gradientBlue.addColorStop(1, 'rgba(147, 197, 253, 0.3)');
-            const gradientRed = ctxSev.createLinearGradient(0, 0, 0, 400);
-            gradientRed.addColorStop(0, 'rgba(239, 68, 68, 1)'); gradientRed.addColorStop(1, 'rgba(252, 165, 165, 0.3)');
-
-            if (mySevChart) mySevChart.destroy();
-            const sevLabels = Object.keys(data.severityCounts);
-            const sevData = Object.values(data.severityCounts);
-            const backgroundColors = sevLabels.map(label => { return ['E', 'F', 'G', 'H', 'I'].some(l => label.startsWith(l)) ? gradientRed : gradientBlue; });
-
-            mySevChart = new Chart(ctxSev, {
-                type: 'bar',
-                data: {
-                    labels: sevLabels,
-                    datasets: [{
-                        label: 'จำนวน', data: sevData, backgroundColor: backgroundColors, borderColor: 'transparent', borderWidth: 0, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.8
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, displayColors: false, callbacks: { title: function (context) { return 'ระดับความรุนแรง: ' + context[0].label; }, label: function (context) { let value = context.raw; let total = data.total; let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0; return ' ' + value + ' รายการ (' + percentage + '%)'; } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6', borderDash: [4, 4] }, ticks: { font: { family: 'Sarabun' }, stepSize: 1 } }, x: { grid: { display: false }, ticks: { font: { family: 'Sarabun' } } } }
-                }
-            });
-        }
-
-        function applyTableFilters() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const filterType = document.getElementById('filterType').value;
-            const filterSev = document.getElementById('filterSeverity').value;
-            const startDate = document.getElementById('filterStartDate').value;
-            const endDate = document.getElementById('filterEndDate').value;
-
-            filteredRecords = allRecords.filter(item => {
-                const matchSearch = (item.hn + item.details).toLowerCase().includes(search);
-                const matchType = filterType === "" || item.meType === filterType;
-                const matchSev = filterSev === "" || (item.severity && item.severity.startsWith(filterSev));
-                let matchDate = true;
-                if (startDate || endDate) {
-                    const itemDate = new Date(item.date);
-                    if (startDate) matchDate = matchDate && (itemDate >= new Date(startDate));
-                    if (endDate) matchDate = matchDate && (itemDate <= new Date(endDate));
-                }
-                return matchSearch && matchType && matchSev && matchDate;
-            });
-            updateDashboardStats(filteredRecords);
-            currentPage = 1; renderTable();
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const paginatedItems = filteredRecords.slice(start, end);
-            if (paginatedItems.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-400"><i class="fa-solid fa-folder-open text-2xl mb-2"></i><br>ไม่พบข้อมูล</td></tr>`; document.getElementById('pageIndicator').innerText = `0 / 0`; return; }
-            let html = "";
-            paginatedItems.forEach((item, index) => {
-                let badgeClass = "bg-gray-100 text-gray-600";
-                if (item.severity.startsWith("E") || item.severity.startsWith("F")) badgeClass = "bg-orange-100 text-orange-600";
-                if (item.severity.startsWith("G") || item.severity.startsWith("H") || item.severity.startsWith("I")) badgeClass = "bg-red-100 text-red-600";
-                html += `<tr onclick="openRecordModal(${start + index})" class="hover:bg-blue-50 cursor-pointer group transition-colors border-b border-gray-50 last:border-0"><td class="px-4 py-3 whitespace-nowrap text-gray-500 group-hover:text-blue-600 font-medium">${formatDate(item.date)}</td><td class="px-4 py-3 font-bold text-gray-700">${item.hn}</td><td class="px-4 py-3"><span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-200">${item.meType}</span></td><td class="px-4 py-3 text-xs text-gray-500 truncate max-w-[150px]">${item.details}</td><td class="px-4 py-3 text-center"><span class="${badgeClass} px-2.5 py-0.5 rounded-full text-xs font-extrabold border border-white shadow-sm">${item.severity.split(' ')[0]}</span></td></tr>`;
-            });
-            tbody.innerHTML = html;
-            const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
-            document.getElementById('pageIndicator').innerText = `${currentPage} / ${totalPages}`;
-        }
-
-        function openRecordModal(index) {
-            const item = filteredRecords[index];
-            if (!item) return;
-            document.getElementById('modalDate').textContent = formatDate(item.date);
-            document.getElementById('modalHN').textContent = item.hn;
-            const typeSpan = document.getElementById('modalType');
-            typeSpan.textContent = item.meType;
-            typeSpan.className = "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-md";
-            if (item.meType.includes('แพ้')) typeSpan.classList.add('bg-teal-500');
-            else if (item.meType.includes('ผิดคน')) typeSpan.classList.add('bg-pink-500');
-            else typeSpan.classList.add('bg-orange-500');
-            document.getElementById('modalSeverity').textContent = item.severity;
-            document.getElementById('modalDetails').textContent = item.details || "-";
-            document.getElementById('detailModal').classList.remove('hidden');
-        }
-
-        function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
-        function changePage(d) { const total = Math.ceil(filteredRecords.length / rowsPerPage); if ((d === -1 && currentPage > 1) || (d === 1 && currentPage < total)) { currentPage += d; renderTable(); } }
-        function formatDate(d) { if (!d) return "-"; return new Date(d).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }); }
-        function exportToExcel() { if (filteredRecords.length === 0) { Swal.fire('แจ้งเตือน', 'ไม่มีข้อมูลให้ Export', 'info'); return; } let csv = "data:text/csv;charset=utf-8,\uFEFFTimestamp,Date,HN,Type,Details,Severity\n"; filteredRecords.forEach(r => { csv += `${r.timestamp},${r.date},${r.hn},${r.meType},${(r.details || "").replace(/,/g, " ")},${(r.severity || "").split(' ')[0]}\n`; }); const link = document.createElement("a"); link.href = encodeURI(csv); link.download = "ME_Report.csv"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
-
-        // Animation for scanning line
-        const styleSheet = document.createElement("style");
-        styleSheet.innerText = `
+    function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+    function changePage(d) { const total = Math.ceil(filteredRecords.length / rowsPerPage); if ((d === -1 && currentPage > 1) || (d === 1 && currentPage < total)) { currentPage += d; renderTable(); } }
+    function formatDate(d) { if(!d) return "-"; return new Date(d).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    function exportToExcel() { if(filteredRecords.length === 0) { Swal.fire('แจ้งเตือน', 'ไม่มีข้อมูลให้ Export', 'info'); return; } let csv = "data:text/csv;charset=utf-8,\uFEFFTimestamp,Date,HN,Type,Details,Severity\n"; filteredRecords.forEach(r => { csv += `${r.timestamp},${r.date},${r.hn},${r.meType},${(r.details||"").replace(/,/g," ")},${(r.severity||"").split(' ')[0]}\n`; }); const link = document.createElement("a"); link.href = encodeURI(csv); link.download = "ME_Report.csv"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+    
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = `
       @keyframes scan {
         0%, 100% { top: 0; }
         50% { top: 100%; }
       }
     `;
-        document.head.appendChild(styleSheet);
-    </script>
+    document.head.appendChild(styleSheet);
+  </script>
 </body>
-
 </html>
