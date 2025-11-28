@@ -14,24 +14,7 @@
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Sarabun', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            blue: '#4A90E2',
-                            light: '#F0F4F8',
-                        }
-                    },
-                    screens: {
-                        'xs': '375px',
-                    }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Sarabun', 'sans-serif'], }, colors: { brand: { blue: '#4A90E2', light: '#F0F4F8', } }, screens: { 'xs': '375px', } } } }
     </script>
 
     <style>
@@ -55,14 +38,28 @@
             border-radius: 10px;
         }
 
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         .btn-type {
-            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.2s;
             position: relative;
-            overflow: visible;
         }
 
         .btn-type:active {
             transform: scale(0.95);
+        }
+
+        .btn-type.selected {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px -3px rgba(0, 0, 0, 0.15);
+            z-index: 10;
         }
 
         .checkmark {
@@ -80,20 +77,12 @@
             border: 2px solid white;
             opacity: 0;
             transform: scale(0);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-            z-index: 20;
+            transition: all 0.3s;
         }
 
         .btn-type.selected .checkmark {
             opacity: 1;
             transform: scale(1);
-        }
-
-        .btn-type.selected {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px -3px rgba(0, 0, 0, 0.15);
-            z-index: 10;
         }
 
         .animate-fade-in {
@@ -123,7 +112,7 @@
             whitespace: nowrap;
         }
 
-        /* Spinner & Upload UI */
+        /* Spinner CSS (สำหรับ Modal) */
         .spinner {
             font-size: 28px;
             position: relative;
@@ -224,56 +213,180 @@
             }
         }
 
-        .file-upload-container {
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .file-upload {
-            position: relative;
-            border: 2px dashed #b8bcbf;
-            border-radius: 12px;
-            padding: 30px 20px;
-            text-align: center;
-            background-color: rgb(255, 255, 255);
-            transition: all 0.3s ease-in-out;
-            cursor: pointer;
-        }
-
-        .file-upload:hover,
-        .file-upload.dragover {
-            background-color: #eef2ff;
-            border-color: #4A90E2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-label {
+        /* Folder Upload CSS */
+        .upload-box {
+            --transition: 350ms;
+            --folder-W: 100px;
+            --folder-H: 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-end;
+            padding: 10px;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            height: calc(var(--folder-H) * 2.2);
+            position: relative;
+            width: 100%;
+            max-width: 280px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .folder {
+            position: absolute;
+            top: -15px;
+            left: calc(50% - 50px);
+            animation: float 2.5s infinite ease-in-out;
+            transition: transform var(--transition) ease;
+        }
+
+        .folder:hover {
+            transform: scale(1.05);
+        }
+
+        .folder .front-side,
+        .folder .back-side {
+            position: absolute;
+            transition: transform var(--transition);
+            transform-origin: bottom center;
+        }
+
+        .folder .back-side::before,
+        .folder .back-side::after {
+            content: "";
+            display: block;
+            background-color: white;
+            opacity: 0.5;
+            width: var(--folder-W);
+            height: var(--folder-H);
+            position: absolute;
+            transform-origin: bottom center;
+            border-radius: 15px;
+            transition: transform 350ms;
+            z-index: 0;
+        }
+
+        .upload-box:hover .back-side::before {
+            transform: rotateX(-5deg) skewX(5deg);
+        }
+
+        .upload-box:hover .back-side::after {
+            transform: rotateX(-15deg) skewX(12deg);
+        }
+
+        .folder .front-side {
+            z-index: 1;
+        }
+
+        .upload-box:hover .front-side {
+            transform: rotateX(-40deg) skewX(15deg);
+        }
+
+        .folder .tip {
+            background: linear-gradient(135deg, #ff9a56, #ff6f56);
+            width: 70px;
+            height: 15px;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: -10px;
+            z-index: 2;
+        }
+
+        .folder .cover {
+            background: linear-gradient(135deg, #ffe563, #ffc663);
+            width: var(--folder-W);
+            height: var(--folder-H);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .custom-file-upload {
+            font-size: 1em;
+            color: #ffffff;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background var(--transition) ease;
+            display: inline-block;
+            width: 100%;
+            padding: 10px 15px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .custom-file-upload:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .custom-file-upload input[type="file"] {
+            display: none;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Image Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .image-item {
+            position: relative;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-item img {
             width: 100%;
             height: 100%;
+            object-fit: cover;
         }
 
-        .upload-icon {
-            font-size: 40px;
-            color: #4A90E2;
-            margin-bottom: 10px;
-            font-style: normal;
+        .image-remove {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .file-upload p {
-            margin: 0;
-            font-size: 14px;
-            color: #6c757d;
-            font-weight: 500;
+        .image-remove:hover {
+            transform: scale(1.1);
+            background: red;
         }
     </style>
 </head>
@@ -311,14 +424,14 @@
 
                     <div class="p-4 sm:p-6">
                         <form id="meForm" onsubmit="handleFormSubmit(event)">
-                            <input type="hidden" name="rowId" id="editRowId"> <input type="hidden" name="oldImageUrl"
-                                id="oldImageUrl">
+                            <input type="hidden" name="rowId" id="editRowId">
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
                                 <div>
                                     <label
                                         class="block text-sm font-semibold text-gray-600 mb-1.5">วันที่เกิดเหตุ</label>
                                     <input type="date" name="incidentDate" id="incidentDate" required
-                                        class="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-gray-700">
+                                        class="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-600 mb-1.5">HN / AN
@@ -327,7 +440,7 @@
                                         <input type="text" id="hnInput" name="hn" placeholder="ระบุเลข HN หรือ AN"
                                             required inputmode="numeric"
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                            class="w-full pl-3 pr-10 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-gray-700">
+                                            class="w-full pl-3 pr-10 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none">
                                         <button type="button" onclick="startScanner()"
                                             class="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-blue-600"><i
                                                 class="fa-solid fa-qrcode text-lg"></i></button>
@@ -340,7 +453,7 @@
                                         class="text-red-400">*</span></label>
                                 <input type="text" name="reporter" id="reporter" placeholder="ระบุชื่อผู้รายงาน"
                                     required
-                                    class="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-gray-700">
+                                    class="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none">
                             </div>
 
                             <div class="mb-6">
@@ -385,7 +498,7 @@
                                     <label class="block text-sm font-semibold text-gray-600 mb-1.5">รายละเอียด <span
                                             class="text-red-400">*</span></label>
                                     <textarea name="meDetails" id="meDetails" rows="3" required
-                                        class="w-full p-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-gray-700 resize-none"
+                                        class="w-full p-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none resize-none"
                                         placeholder="รายละเอียดเพิ่มเติม"></textarea>
                                 </div>
                                 <div>
@@ -393,7 +506,7 @@
                                         <span class="text-red-400">*</span></label>
                                     <div class="relative">
                                         <select name="severity" id="severity" required
-                                            class="w-full p-2.5 pl-3 pr-8 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-gray-700 appearance-none">
+                                            class="w-full p-2.5 pl-3 pr-8 rounded-lg bg-gray-50 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none appearance-none">
                                             <option value="">-- เลือกระดับความรุนแรง --</option>
                                             <option value="A">【 A 】 มีโอกาสเกิด แต่ยังไม่เกิด</option>
                                             <option value="B">【 B 】 เกิดแล้ว แต่ไม่ถึงผู้ป่วย</option>
@@ -415,30 +528,30 @@
                                     <label
                                         class="block text-sm font-semibold text-gray-600 mb-2 w-full text-left">แนบรูปภาพประกอบ
                                         (Optional)</label>
-                                    <div id="dropArea" class="file-upload-container">
-                                        <div class="file-upload">
-                                            <input class="file-input" id="fileInput" type="file" accept="image/*"
-                                                onchange="previewImage(this)" />
-                                            <label class="file-label" for="fileInput">
-                                                <i class="upload-icon">📁</i>
-                                                <p>Drag & Drop your files here<br>or click to upload</p>
-                                            </label>
+
+                                    <div id="dropArea" class="upload-box">
+                                        <div class="folder">
+                                            <div class="front-side">
+                                                <div class="tip"></div>
+                                                <div class="cover"></div>
+                                            </div>
+                                            <div class="back-side cover"></div>
                                         </div>
+                                        <label class="custom-file-upload">
+                                            <input class="title" id="fileInput" type="file" accept="image/*" multiple
+                                                onchange="handleFileSelect(this)" />
+                                            <span id="dropText">Choose a file</span>
+                                        </label>
                                     </div>
-                                    <div id="previewContainer"
-                                        class="hidden relative w-full max-w-[250px] h-[160px] bg-gray-100 rounded-xl border-2 border-dashed border-blue-300 flex justify-center items-center overflow-hidden mt-2">
-                                        <img id="imgPreview" class="h-full object-contain" />
-                                        <button type="button" onclick="removeImage()"
-                                            class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-red-600 transition-all hover:scale-110"><i
-                                                class="fa-solid fa-xmark"></i></button>
-                                    </div>
+
+                                    <div id="imageGrid" class="image-grid w-full"></div>
                                 </div>
 
                                 <div class="flex gap-3 pt-6">
                                     <button type="button" onclick="resetForm()"
-                                        class="flex-1 py-2.5 rounded-full border border-gray-300 text-gray-500 font-bold hover:bg-gray-50 hover:text-gray-700 transition-all text-sm">ยกเลิก</button>
+                                        class="flex-1 py-2.5 rounded-full border border-gray-300 text-gray-500 font-bold hover:bg-gray-50 transition-all text-sm">ยกเลิก</button>
                                     <button type="submit" id="submitBtn"
-                                        class="flex-[2] py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-md hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all active:scale-95 text-sm">บันทึก</button>
+                                        class="flex-[2] py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-md hover:shadow-blue-500/30 transition-all text-sm">บันทึก</button>
                                 </div>
                             </div>
                         </form>
@@ -491,8 +604,8 @@
                     <div class="p-3 border-b bg-gray-50/50 flex flex-col gap-2">
                         <div class="flex justify-between items-center">
                             <h4 class="font-bold text-gray-700 flex items-center gap-2 text-sm no-break"><i
-                                    class="fa-solid fa-list-ul text-blue-500"></i> รายการบันทึก</h4>
-                            <button onclick="exportToExcel()"
+                                    class="fa-solid fa-list-ul text-blue-500"></i> รายการบันทึก</h4><button
+                                onclick="exportToExcel()"
                                 class="bg-green-500 hover:bg-green-600 text-white text-[10px] sm:text-xs px-3 py-1 rounded-lg flex items-center gap-1 shadow active:scale-95 font-bold no-break"><i
                                     class="fa-solid fa-file-excel"></i> Export</button>
                         </div>
@@ -608,7 +721,15 @@
                     <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 max-h-32 overflow-y-auto text-xs sm:text-sm text-gray-600 leading-relaxed"
                         id="modalDetails"></div>
                 </div>
-                <div id="modalImageContainer" class="hidden animate-fade-in mt-2 space-y-1"></div>
+
+                <div>
+                    <label
+                        class="block text-[10px] font-bold text-gray-400 uppercase mb-1 no-break">หลักฐานรูปภาพ</label>
+                    <div id="modalGallery" class="flex overflow-x-auto gap-2 snap-x snap-mandatory pb-2 no-scrollbar"
+                        style="-webkit-overflow-scrolling: touch;">
+                    </div>
+                </div>
+
             </div>
             <div class="p-3 bg-gray-50 border-t shrink-0 flex justify-between items-center">
                 <div class="flex gap-2">
@@ -637,22 +758,6 @@
             <div
                 class="p-0 bg-black relative flex-1 min-h-[250px] flex items-center justify-center overflow-hidden bg-black">
                 <div id="reader" class="w-full h-full bg-black"></div>
-                <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
-                    <div class="w-56 h-32 border-2 border-teal-400/80 rounded-lg relative">
-                        <div class="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-teal-400 -mt-1 -ml-1">
-                        </div>
-                        <div class="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-teal-400 -mt-1 -mr-1">
-                        </div>
-                        <div class="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-teal-400 -mb-1 -ml-1">
-                        </div>
-                        <div
-                            class="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-teal-400 -mb-1 -mr-1">
-                        </div>
-                        <div
-                            class="absolute top-0 left-0 w-full h-0.5 bg-red-500/80 shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-[scan_2s_infinite]">
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -666,7 +771,8 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzVSNZv4huNY23q9N3Eh-Uxl9Pk6S7OID1OXB0uY_YV_y0vwJxocv4_S76RG-6W_M1Y8A/exec";
+        // ✅ URL API (อัปเดตล่าสุด)
+        const API_URL = "https://script.google.com/macros/s/AKfycbzcYcPJBww_z6jZhe65-V1_AWlgHEaLuVCkGnk6D4Omj1VU19ehCXfdvbck_j9WoRdw/exec";
 
         let allRecords = [];
         let filteredRecords = [];
@@ -674,23 +780,82 @@
         const rowsPerPage = 15;
         let isDashboardLoaded = false;
         let html5QrCode = null;
-        let currentRecord = null; // เก็บข้อมูลปัจจุบันที่ดูใน Modal
+        let currentRecord = null;
+        let uploadedFiles = [];
 
-        // Drag & Drop Logic
         document.addEventListener('DOMContentLoaded', () => {
             const dropArea = document.getElementById('dropArea');
-            const fileInput = document.getElementById('fileInput');
             if (dropArea) {
                 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false));
-                const innerBox = dropArea.querySelector('.file-upload');
-                ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => innerBox.classList.add('dragover'), false));
-                ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => innerBox.classList.remove('dragover'), false));
+                ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.querySelector('.upload-box').classList.add('drag-active'), false)); // แก้ class ให้ตรงกับ CSS ใหม่
+                ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.querySelector('.upload-box').classList.remove('drag-active'), false));
                 dropArea.addEventListener('drop', (e) => {
-                    const dt = e.dataTransfer; const files = dt.files;
-                    if (files.length > 0) { fileInput.files = files; previewImage(fileInput); }
+                    const files = e.dataTransfer.files;
+                    if (files.length) handleFiles(files);
                 }, false);
             }
         });
+
+        function handleFileSelect(input) {
+            handleFiles(input.files);
+            input.value = "";
+        }
+
+        function handleFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > 10 * 1024 * 1024) { Swal.fire('ไฟล์ใหญ่เกินไป', 'สูงสุด 10MB', 'warning'); continue; }
+                uploadedFiles.push(files[i]);
+            }
+            updateDropText();
+            renderPreviews();
+        }
+
+        function updateDropText() {
+            const dropText = document.getElementById('dropText');
+            if (uploadedFiles.length > 0) {
+                dropText.innerHTML = `เพิ่มรูปภาพอีก... (${uploadedFiles.length})`;
+            } else {
+                dropText.innerHTML = "Choose a file";
+            }
+        }
+
+        function renderPreviews() {
+            const grid = document.getElementById('imageGrid');
+            grid.innerHTML = "";
+            uploadedFiles.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'image-item';
+
+                const img = document.createElement('img');
+                if (typeof item === 'string') {
+                    img.src = convertDriveLink(item);
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = (e) => img.src = e.target.result;
+                    reader.readAsDataURL(item);
+                }
+
+                const removeBtn = document.createElement('div');
+                removeBtn.className = 'image-remove';
+                removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                removeBtn.onclick = () => {
+                    uploadedFiles.splice(index, 1);
+                    updateDropText();
+                    renderPreviews();
+                };
+
+                div.appendChild(img);
+                div.appendChild(removeBtn);
+                grid.appendChild(div);
+            });
+        }
+
+        function convertDriveLink(url) {
+            if (!url) return "";
+            if (url.includes("id=")) return `https://drive.google.com/thumbnail?id=${url.split('id=')[1].split('&')[0]}&sz=w1000`;
+            if (url.includes("/d/")) return `https://drive.google.com/thumbnail?id=${url.split('/d/')[1].split('/')[0]}&sz=w1000`;
+            return url;
+        }
 
         function switchTab(tabName) {
             document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
@@ -718,31 +883,7 @@
             else if (typeId === 2) btn.classList.add('border-pink-400', 'bg-pink-50');
             else if (typeId === 3) btn.classList.add('border-orange-400', 'bg-orange-50');
             document.getElementById('detailSection').classList.remove('hidden');
-            if (!document.getElementById('editRowId').value) { // Focus only if creating new
-                document.getElementById('meDetails').focus();
-            }
-        }
-
-        function previewImage(input) {
-            const file = input.files[0];
-            if (file) {
-                if (file.size > 5 * 1024 * 1024) { Swal.fire('ไฟล์ใหญ่เกินไป', 'กรุณาอัปโหลดรูปภาพขนาดไม่เกิน 5MB', 'warning'); input.value = ""; return; }
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    document.getElementById('dropArea').classList.add('hidden');
-                    document.getElementById('previewContainer').classList.remove('hidden');
-                    document.getElementById('imgPreview').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function removeImage() {
-            document.getElementById('fileInput').value = "";
-            document.getElementById('imgPreview').src = "";
-            document.getElementById('previewContainer').classList.add('hidden');
-            document.getElementById('dropArea').classList.remove('hidden');
-            document.getElementById('oldImageUrl').value = ""; // Clear old image ref if any
+            if (!document.getElementById('editRowId').value) document.getElementById('meDetails').focus();
         }
 
         function resetForm() {
@@ -753,17 +894,34 @@
                 b.classList.remove('selected', 'border-teal-400', 'bg-teal-50', 'border-pink-400', 'bg-pink-50', 'border-orange-400', 'bg-orange-50');
                 b.classList.add('bg-white', 'border-gray-100');
             });
-            removeImage();
+            uploadedFiles = [];
+            renderPreviews();
+            updateDropText();
 
-            // Reset Edit Mode
             document.getElementById('editRowId').value = "";
-            document.getElementById('oldImageUrl').value = "";
             document.getElementById('formTitle').innerText = "บันทึกข้อมูล (ME)";
             document.getElementById('submitBtn').innerText = "บันทึก";
             document.getElementById('submitBtn').className = "flex-[2] py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-md hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all active:scale-95 text-sm";
         }
 
-        function handleFormSubmit(e) {
+        async function prepareImagesForSubmit() {
+            const processedImages = [];
+            for (const item of uploadedFiles) {
+                if (typeof item === 'string') {
+                    processedImages.push({ url: item });
+                } else {
+                    const base64 = await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+                        reader.readAsDataURL(item);
+                    });
+                    processedImages.push({ data: base64, mime: item.type });
+                }
+            }
+            return processedImages;
+        }
+
+        async function handleFormSubmit(e) {
             e.preventDefault();
             const meType = document.getElementById('meType').value;
             const severity = document.getElementById('severity').value;
@@ -774,51 +932,30 @@
 
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
-
-            // ✅ ตรวจสอบว่าเป็น Create หรือ Update
             data.action = data.rowId ? 'update' : 'save';
+            data.images = await prepareImagesForSubmit();
 
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-
-            const processSubmission = new Promise((resolve) => {
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (event) {
-                        data.imageFile = event.target.result.split(',')[1];
-                        data.imageMime = file.type;
-                        resolve(data);
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    resolve(data);
-                }
-            });
-
-            processSubmission.then((finalData) => {
-                fetch(API_URL, { method: "POST", body: JSON.stringify(finalData), headers: { "Content-Type": "text/plain" } })
-                    .then(response => response.json())
-                    .then(result => {
-                        document.getElementById('loading').classList.add('hidden');
-                        if (result.status === 'success') {
-                            const msg = data.action === 'update' ? 'แก้ไขข้อมูลสำเร็จ' : 'บันทึกสำเร็จ';
-                            Swal.fire({ icon: 'success', title: msg, timer: 1500, showConfirmButton: false }).then(() => {
-                                resetForm();
-                                if (data.action === 'update') switchTab('dashboard'); // กลับไปหน้า Dashboard ถ้าเป็นการแก้ไข
-                                loadDashboardData(); // รีโหลดข้อมูล
-                            });
-                        } else {
-                            Swal.fire('Error', 'ไม่สำเร็จ: ' + (result.message || ""), 'error');
-                        }
-                    })
-                    .catch(error => {
-                        document.getElementById('loading').classList.add('hidden');
-                        Swal.fire('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-                    });
-            });
+            fetch(API_URL, { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "text/plain" } })
+                .then(response => response.json())
+                .then(result => {
+                    document.getElementById('loading').classList.add('hidden');
+                    if (result.status === 'success') {
+                        const msg = data.action === 'update' ? 'แก้ไขข้อมูลสำเร็จ' : 'บันทึกสำเร็จ';
+                        Swal.fire({ icon: 'success', title: msg, timer: 1500, showConfirmButton: false }).then(() => {
+                            resetForm();
+                            if (data.action === 'update') switchTab('dashboard');
+                            loadDashboardData();
+                        });
+                    } else {
+                        Swal.fire('Error', 'ไม่สำเร็จ: ' + (result.message || ""), 'error');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loading').classList.add('hidden');
+                    Swal.fire('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+                });
         }
 
-        // ✅ ฟังก์ชันยืนยัน PIN
         async function verifyPin() {
             const { value: pin } = await Swal.fire({
                 title: 'ยืนยันรหัสผ่าน',
@@ -832,23 +969,19 @@
             return pin === "1234";
         }
 
-        // ✅ ฟังก์ชันโหลดข้อมูลลงฟอร์มเพื่อแก้ไข
         async function editRecord() {
             closeModal();
             if (await verifyPin()) {
                 const item = currentRecord;
                 if (!item) return;
 
-                // Set values
                 document.getElementById('editRowId').value = item.rowId;
-                document.querySelector('input[name="incidentDate"]').value = item.date.split("T")[0]; // Adjust date format if needed
+                document.querySelector('input[name="incidentDate"]').value = item.date.split("T")[0];
                 document.getElementById('hnInput').value = item.hn;
                 document.getElementById('reporter').value = item.reporter;
                 document.getElementById('meDetails').value = item.details;
-                document.getElementById('severity').value = item.severity.split(" ")[0]; // Get only code (A, B...) or match exact value
-                document.getElementById('oldImageUrl').value = item.imageUrl;
+                document.getElementById('severity').value = item.severity.split(" ")[0];
 
-                // Select Type Button
                 const types = { 'แพ้ยาซ้ำ': 1, 'จ่ายยาผิดคน': 2, 'ME ระดับ E ขึ้นไป': 3 };
                 const typeId = types[item.meType] || 0;
                 if (typeId) {
@@ -856,21 +989,13 @@
                     selectType(item.meType, typeId, btns[typeId - 1]);
                 }
 
-                // Handle Image Preview
-                if (item.imageUrl && item.imageUrl !== "-" && !item.imageUrl.startsWith("Error")) {
-                    document.getElementById('dropArea').classList.add('hidden');
-                    document.getElementById('previewContainer').classList.remove('hidden');
-                    let directUrl = item.imageUrl;
-                    if (directUrl.includes("id=")) {
-                        const fileId = directUrl.split('id=')[1].split('&')[0];
-                        directUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
-                    }
-                    document.getElementById('imgPreview').src = directUrl;
-                } else {
-                    removeImage();
+                uploadedFiles = [];
+                if (item.imageUrl && item.imageUrl !== "-" && item.imageUrl.trim() !== "") {
+                    uploadedFiles = item.imageUrl.split(',');
                 }
+                renderPreviews();
+                updateDropText();
 
-                // Change UI to Edit Mode
                 document.getElementById('formTitle').innerText = "แก้ไขข้อมูล";
                 const submitBtn = document.getElementById('submitBtn');
                 submitBtn.innerText = "อัปเดตข้อมูล";
@@ -882,7 +1007,6 @@
             }
         }
 
-        // ✅ ฟังก์ชันลบข้อมูล
         async function deleteRecord() {
             if (await verifyPin()) {
                 Swal.fire({
@@ -919,7 +1043,6 @@
             }
         }
 
-        // ... (Scanner functions remain same) ...
         function startScanner() { document.getElementById('scannerModal').classList.remove('hidden'); setTimeout(() => { if (html5QrCode === null) { html5QrCode = new Html5Qrcode("reader"); } const config = { fps: 10, qrbox: { width: 250, height: 150 }, aspectRatio: 1.0 }; html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure).catch(err => { Swal.fire('Error', 'ไม่สามารถเปิดกล้องได้', 'error'); stopScanner(); }); }, 100); }
         function onScanSuccess(decodedText, decodedResult) { document.getElementById('hnInput').value = decodedText; stopScanner(); const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true }); Toast.fire({ icon: 'success', title: 'อ่านรหัสสำเร็จ: ' + decodedText }); }
         function onScanFailure(error) { }
@@ -939,64 +1062,76 @@
                 .catch(err => { console.error(err); document.getElementById('loading').classList.add('hidden'); });
         }
 
-        // ... (updateDashboardStats & renderCharts remain same) ...
-        function updateDashboardStats(records) { document.getElementById('totalCount').textContent = records.length; const typeCounts = {}; const nameMapping = { 'แพ้ยาซ้ำ': 'แพ้ยาซ้ำ', 'จ่ายยาผิดคน': 'ผิดคน', 'ME ระดับ E ขึ้นไป': 'ระดับ E+' }; records.forEach(r => { const rawType = r.meType; const shortName = nameMapping[rawType] || rawType; typeCounts[shortName] = (typeCounts[shortName] || 0) + 1; }); const severityCounts = {}; records.forEach(r => { const sev = (r.severity || "").split(' ')[0]; if (sev) severityCounts[sev] = (severityCounts[sev] || 0) + 1; }); const sortedSevKeys = Object.keys(severityCounts).sort(); const sortedSevCounts = {}; sortedSevKeys.forEach(k => sortedSevCounts[k] = severityCounts[k]); renderCharts({ typeCounts: typeCounts, severityCounts: sortedSevCounts, total: records.length }); }
-        let myTypeChart, mySevChart;
-        function renderCharts(data) { const typeLabels = Object.keys(data.typeCounts).map(label => { const value = data.typeCounts[label]; const percent = data.total > 0 ? ((value / data.total) * 100).toFixed(1) : 0; return `${label} (${percent}%)`; }); const ctxType = document.getElementById('typeChart').getContext('2d'); if (myTypeChart) myTypeChart.destroy(); myTypeChart = new Chart(ctxType, { type: 'doughnut', data: { labels: typeLabels, datasets: [{ data: Object.values(data.typeCounts), backgroundColor: ['#2dd4bf', '#f472b6', '#fb923c', '#818cf8', '#94a3b8'], borderColor: '#ffffff', borderWidth: 3, hoverOffset: 15, hoverBorderColor: '#ffffff', hoverBorderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: { family: 'Sarabun', size: 11 } } }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true, callbacks: { label: function (context) { return ' ' + context.raw + ' รายการ'; } } } }, animation: { animateScale: true, animateRotate: true } } }); const ctxSev = document.getElementById('severityChart').getContext('2d'); const gradientBlue = ctxSev.createLinearGradient(0, 0, 0, 400); gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 1)'); gradientBlue.addColorStop(1, 'rgba(147, 197, 253, 0.3)'); const gradientRed = ctxSev.createLinearGradient(0, 0, 0, 400); gradientRed.addColorStop(0, 'rgba(239, 68, 68, 1)'); gradientRed.addColorStop(1, 'rgba(252, 165, 165, 0.3)'); if (mySevChart) mySevChart.destroy(); const sevLabels = Object.keys(data.severityCounts); const sevData = Object.values(data.severityCounts); const backgroundColors = sevLabels.map(label => { return ['E', 'F', 'G', 'H', 'I'].some(l => label.startsWith(l)) ? gradientRed : gradientBlue; }); mySevChart = new Chart(ctxSev, { type: 'bar', data: { labels: sevLabels, datasets: [{ label: 'จำนวน', data: sevData, backgroundColor: backgroundColors, borderColor: 'transparent', borderWidth: 0, borderRadius: 6, barPercentage: 0.6, categoryPercentage: 0.8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, displayColors: false, callbacks: { title: function (context) { return 'ระดับความรุนแรง: ' + context[0].label; }, label: function (context) { let value = context.raw; let total = data.total; let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0; return ' ' + value + ' รายการ (' + percentage + '%)'; } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6', borderDash: [4, 4] }, ticks: { font: { family: 'Sarabun', size: 10 }, stepSize: 1 } }, x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 10 } } } } } }); }
-
+        // ✅ เพิ่มฟังก์ชัน Filter ที่ขาดหายไป
         function applyTableFilters() {
             const search = document.getElementById('searchInput').value.toLowerCase();
-            const filterType = document.getElementById('filterType').value;
-            const filterSev = document.getElementById('filterSeverity').value;
-            const startDate = document.getElementById('filterStartDate').value;
-            const endDate = document.getElementById('filterEndDate').value;
+            const start = document.getElementById('filterStartDate').value;
+            const end = document.getElementById('filterEndDate').value;
+            const type = document.getElementById('filterType').value;
+            const sev = document.getElementById('filterSeverity').value;
 
             filteredRecords = allRecords.filter(item => {
-                const matchSearch = (item.hn + item.details).toLowerCase().includes(search);
-                const matchType = filterType === "" || item.meType === filterType;
-                const matchSev = filterSev === "" || (item.severity && item.severity.startsWith(filterSev));
-                let matchDate = true;
-                if (startDate || endDate) {
-                    const itemDate = new Date(item.date);
-                    if (startDate) matchDate = matchDate && (itemDate >= new Date(startDate));
-                    if (endDate) matchDate = matchDate && (itemDate <= new Date(endDate));
-                }
-                return matchSearch && matchType && matchSev && matchDate;
+                const matchSearch = (item.hn || "").toLowerCase().includes(search) || (item.details || "").toLowerCase().includes(search);
+                const matchType = type ? item.meType === type : true;
+                const matchSev = sev ? item.severity.startsWith(sev) : true;
+                const date = item.date.split("T")[0];
+                const matchStart = start ? date >= start : true;
+                const matchEnd = end ? date <= end : true;
+                return matchSearch && matchType && matchSev && matchStart && matchEnd;
             });
+
+            currentPage = 1;
+            renderTable();
             updateDashboardStats(filteredRecords);
-            currentPage = 1; renderTable();
         }
 
+        // ✅ เพิ่มฟังก์ชัน Render Table ที่ขาดหายไป
         function renderTable() {
             const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
             const start = (currentPage - 1) * rowsPerPage;
             const end = start + rowsPerPage;
-            const paginatedItems = filteredRecords.slice(start, end);
-            if (paginatedItems.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-400"><i class="fa-solid fa-folder-open text-xl mb-2"></i><br>ไม่พบข้อมูล</td></tr>`; document.getElementById('pageIndicator').innerText = `0 / 0`; return; }
-            let html = "";
-            paginatedItems.forEach((item, index) => {
-                let badgeClass = "bg-gray-100 text-gray-600";
-                if (item.severity.startsWith("E") || item.severity.startsWith("F")) badgeClass = "bg-orange-100 text-orange-600";
-                if (item.severity.startsWith("G") || item.severity.startsWith("H") || item.severity.startsWith("I")) badgeClass = "bg-red-100 text-red-600";
-                html += `
-                <tr onclick="openRecordModal(${start + index})" class="hover:bg-blue-50 cursor-pointer group transition-colors border-b border-gray-50 last:border-0">
-                    <td class="px-3 py-2 whitespace-nowrap text-gray-500 group-hover:text-blue-600 font-medium no-break">${formatDate(item.date)}</td>
-                    <td class="px-3 py-2 font-bold text-gray-700 no-break">${item.hn}</td>
-                    <td class="px-3 py-2"><span class="text-[10px] sm:text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-200 no-break">${item.meType}</span></td>
-                    <td class="px-3 py-2 text-gray-600 truncate max-w-[150px] sm:max-w-[200px]" title="${item.details || ''}">${item.details || "-"}</td>
-                    <td class="px-3 py-2 text-center"><span class="${badgeClass} px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-extrabold border border-white shadow-sm no-break">${item.severity.split(' ')[0]}</span></td>
-                </tr>`;
+            const pageData = filteredRecords.slice(start, end);
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-400">ไม่พบข้อมูล</td></tr>`;
+                document.getElementById('pageIndicator').innerText = "0 / 0";
+                return;
+            }
+
+            pageData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-blue-50/50 transition-colors border-b border-gray-50 cursor-pointer";
+                tr.onclick = () => openRecordModal(start + index);
+
+                let badgeColor = "bg-gray-400";
+                if (item.meType.includes("แพ้")) badgeColor = "bg-teal-500";
+                else if (item.meType.includes("ผิดคน")) badgeColor = "bg-pink-500";
+                else badgeColor = "bg-orange-500";
+
+                tr.innerHTML = `
+            <td class="px-3 py-3 font-medium text-gray-600 no-break">${formatDate(item.date)}</td>
+            <td class="px-3 py-3 text-blue-600 font-bold no-break">${item.hn}</td>
+            <td class="px-3 py-3"><span class="${badgeColor} text-white px-2 py-0.5 rounded text-[10px] sm:text-xs no-break">${item.meType}</span></td>
+            <td class="px-3 py-3 text-gray-500 truncate max-w-[100px] sm:max-w-[150px]">${item.details}</td>
+            <td class="px-3 py-3 font-bold text-red-500 text-center">${item.severity.split(' ')[0]}</td>
+        `;
+                tbody.appendChild(tr);
             });
-            tbody.innerHTML = html;
+
             const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
             document.getElementById('pageIndicator').innerText = `${currentPage} / ${totalPages}`;
         }
 
-        // ✅ อัปเดต openRecordModal เพื่อรองรับปุ่ม Edit/Delete
+        function updateDashboardStats(records) { document.getElementById('totalCount').textContent = records.length; const typeCounts = {}; const nameMapping = { 'แพ้ยาซ้ำ': 'แพ้ยาซ้ำ', 'จ่ายยาผิดคน': 'ผิดคน', 'ME ระดับ E ขึ้นไป': 'ระดับ E+' }; records.forEach(r => { const rawType = r.meType; const shortName = nameMapping[rawType] || rawType; typeCounts[shortName] = (typeCounts[shortName] || 0) + 1; }); const severityCounts = {}; records.forEach(r => { const sev = (r.severity || "").split(' ')[0]; if (sev) severityCounts[sev] = (severityCounts[sev] || 0) + 1; }); const sortedSevKeys = Object.keys(severityCounts).sort(); const sortedSevCounts = {}; sortedSevKeys.forEach(k => sortedSevCounts[k] = severityCounts[k]); renderCharts({ typeCounts: typeCounts, severityCounts: sortedSevCounts, total: records.length }); }
+        let myTypeChart, mySevChart;
+        function renderCharts(data) { const typeLabels = Object.keys(data.typeCounts).map(label => { const value = data.typeCounts[label]; const percent = data.total > 0 ? ((value / data.total) * 100).toFixed(1) : 0; return `${label} (${percent}%)`; }); const ctxType = document.getElementById('typeChart').getContext('2d'); if (myTypeChart) myTypeChart.destroy(); myTypeChart = new Chart(ctxType, { type: 'doughnut', data: { labels: typeLabels, datasets: [{ data: Object.values(data.typeCounts), backgroundColor: ['#2dd4bf', '#f472b6', '#fb923c', '#818cf8', '#94a3b8'], borderColor: '#ffffff', borderWidth: 3, hoverOffset: 15, hoverBorderColor: '#ffffff', hoverBorderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: { family: 'Sarabun', size: 11 } } }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true, callbacks: { label: function (context) { return ' ' + context.raw + ' รายการ'; } } } }, animation: { animateScale: true, animateRotate: true } } }); const ctxSev = document.getElementById('severityChart').getContext('2d'); const gradientBlue = ctxSev.createLinearGradient(0, 0, 0, 400); gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 1)'); gradientBlue.addColorStop(1, 'rgba(147, 197, 253, 0.3)'); const gradientRed = ctxSev.createLinearGradient(0, 0, 0, 400); gradientRed.addColorStop(0, 'rgba(239, 68, 68, 1)'); gradientRed.addColorStop(1, 'rgba(252, 165, 165, 0.3)'); if (mySevChart) mySevChart.destroy(); const sevLabels = Object.keys(data.severityCounts); const sevData = Object.values(data.severityCounts); const backgroundColors = sevLabels.map(label => { return ['E', 'F', 'G', 'H', 'I'].some(l => label.startsWith(l)) ? gradientRed : gradientBlue; }); mySevChart = new Chart(ctxSev, { type: 'bar', data: { labels: sevLabels, datasets: [{ label: 'จำนวน', data: sevData, backgroundColor: backgroundColors, borderColor: 'transparent', borderWidth: 0, borderRadius: 6, barPercentage: 0.6, categoryPercentage: 0.8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, displayColors: false, callbacks: { title: function (context) { return 'ระดับความรุนแรง: ' + context[0].label; }, label: function (context) { let value = context.raw; let total = data.total; let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0; return ' ' + value + ' รายการ (' + percentage + '%)'; } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6', borderDash: [4, 4] }, ticks: { font: { family: 'Sarabun', size: 10 }, stepSize: 1 } }, x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 10 } } } } } }); }
+
+        // ✅ อัปเดต openRecordModal ให้เป็น Horizontal Scroll Gallery
         function openRecordModal(index) {
             const item = filteredRecords[index];
             if (!item) return;
-            currentRecord = item; // Store current record
+            currentRecord = item;
 
             document.getElementById('modalDate').textContent = formatDate(item.date);
             document.getElementById('modalHN').textContent = item.hn;
@@ -1010,30 +1145,30 @@
             document.getElementById('modalSeverity').textContent = item.severity;
             document.getElementById('modalDetails').textContent = item.details || "-";
 
-            const imgContainer = document.getElementById('modalImageContainer');
-            if (item.imageUrl && item.imageUrl !== "-" && !item.imageUrl.startsWith("Error")) {
-                let directUrl = item.imageUrl;
-                let fileId = "";
-                if (directUrl.includes("/d/")) { try { fileId = directUrl.split('/d/')[1].split('/')[0]; } catch (e) { } } else if (directUrl.includes("id=")) { try { fileId = directUrl.split('id=')[1].split('&')[0]; } catch (e) { } }
-                if (fileId) { directUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`; }
-                imgContainer.innerHTML = `
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 no-break">หลักฐานรูปภาพ</label>
-                    <div class="rounded-lg overflow-hidden border border-gray-200 group relative bg-gray-100 flex justify-center items-center min-h-[150px]">
-                        <div class="spinner center" id="loadingSpinner"><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div><div class="spinner-blade"></div></div>
-                        <img src="${directUrl}" class="w-full h-auto object-cover max-h-60 opacity-0 transition-opacity duration-500" onclick="window.open('${item.imageUrl}', '_blank')" style="cursor: pointer;" referrerpolicy="no-referrer" onload="this.classList.remove('opacity-0'); document.getElementById('loadingSpinner').style.display='none';" onerror="this.onerror=null; document.getElementById('loadingSpinner').style.display='none'; this.parentElement.innerHTML='<div class=\\'text-center p-4\\'><p class=\\'text-xs text-red-400 mb-2\\'>ไม่สามารถโหลดรูปตัวอย่างได้</p><a href=\\'${item.imageUrl}\\' target=\\'_blank\\' class=\\'bg-blue-500 text-white px-3 py-1 rounded text-xs\\'>คลิกเพื่อดูรูปต้นฉบับ</a></div>';">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 pointer-events-none transition-colors"></div>
-                        <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"><i class="fa-solid fa-magnifying-glass"></i> คลิกดูภาพเต็ม</div>
-                    </div>`;
-                imgContainer.classList.remove('hidden');
+            const gallery = document.getElementById('modalGallery');
+            gallery.innerHTML = "";
+            gallery.className = "hidden";
+
+            if (item.imageUrl && item.imageUrl !== "-" && item.imageUrl.trim() !== "") {
+                gallery.classList.remove('hidden');
+                gallery.className = "flex overflow-x-auto gap-2 snap-x snap-mandatory pb-2 no-scrollbar";
+
+                const urls = item.imageUrl.split(',');
+                urls.forEach(url => {
+                    const thumbUrl = convertDriveLink(url);
+                    const img = document.createElement('img');
+                    img.src = thumbUrl;
+                    img.className = "w-full h-48 object-contain bg-black/5 rounded-lg flex-shrink-0 snap-center border border-gray-200 cursor-pointer";
+                    img.onclick = () => window.open(url, '_blank');
+                    gallery.appendChild(img);
+                });
             } else {
-                imgContainer.innerHTML = "";
-                imgContainer.classList.add('hidden');
+                gallery.classList.remove('hidden');
+                gallery.innerHTML = `<div class="w-full text-center text-gray-400 py-4 text-xs">ไม่มีรูปภาพประกอบ</div>`;
             }
 
-            // Bind events for buttons
             document.getElementById('btnEdit').onclick = editRecord;
             document.getElementById('btnDelete').onclick = deleteRecord;
-
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
