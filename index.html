@@ -24,6 +24,11 @@
             overscroll-behavior-y: none;
         }
 
+        /* --- แก้ไข Z-Index ของ SweetAlert2 ให้สูงกว่า Modal อื่นๆ --- */
+        .swal2-container {
+            z-index: 20000 !important;
+        }
+
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -112,109 +117,48 @@
             whitespace: nowrap;
         }
 
-        /* Spinner CSS (สำหรับ Modal) */
-        .spinner {
-            font-size: 28px;
-            position: relative;
+        /* --- iOS Style Spinner CSS --- */
+        .ios-spinner {
+            color: #69717d;
             display: inline-block;
-            width: 1em;
-            height: 1em;
+            position: relative;
+            width: 40px;
+            height: 40px;
         }
-
-        .spinner.center {
+        .ios-spinner div {
+            transform-origin: 20px 20px;
+            animation: ios-spinner-anim 1.2s linear infinite;
+        }
+        .ios-spinner div:after {
+            content: " ";
+            display: block;
             position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            margin: auto;
-            z-index: 5;
+            top: 2px;
+            left: 18px;
+            width: 3px;
+            height: 9px;
+            border-radius: 20%;
+            background: #9ca3af;
         }
-
-        .spinner .spinner-blade {
-            position: absolute;
-            left: 0.4629em;
-            bottom: 0;
-            width: 0.074em;
-            height: 0.2777em;
-            border-radius: 0.0555em;
-            background-color: transparent;
-            transform-origin: center -0.2222em;
-            animation: spinner-fade9234 1s infinite linear;
-        }
-
-        .spinner .spinner-blade:nth-child(1) {
-            animation-delay: 0s;
-            transform: rotate(0deg);
-        }
-
-        .spinner .spinner-blade:nth-child(2) {
-            animation-delay: 0.083s;
-            transform: rotate(30deg);
-        }
-
-        .spinner .spinner-blade:nth-child(3) {
-            animation-delay: 0.166s;
-            transform: rotate(60deg);
-        }
-
-        .spinner .spinner-blade:nth-child(4) {
-            animation-delay: 0.249s;
-            transform: rotate(90deg);
-        }
-
-        .spinner .spinner-blade:nth-child(5) {
-            animation-delay: 0.332s;
-            transform: rotate(120deg);
-        }
-
-        .spinner .spinner-blade:nth-child(6) {
-            animation-delay: 0.415s;
-            transform: rotate(150deg);
-        }
-
-        .spinner .spinner-blade:nth-child(7) {
-            animation-delay: 0.498s;
-            transform: rotate(180deg);
-        }
-
-        .spinner .spinner-blade:nth-child(8) {
-            animation-delay: 0.581s;
-            transform: rotate(210deg);
-        }
-
-        .spinner .spinner-blade:nth-child(9) {
-            animation-delay: 0.664s;
-            transform: rotate(240deg);
-        }
-
-        .spinner .spinner-blade:nth-child(10) {
-            animation-delay: 0.747s;
-            transform: rotate(270deg);
-        }
-
-        .spinner .spinner-blade:nth-child(11) {
-            animation-delay: 0.83s;
-            transform: rotate(300deg);
-        }
-
-        .spinner .spinner-blade:nth-child(12) {
-            animation-delay: 0.913s;
-            transform: rotate(330deg);
-        }
-
-        @keyframes spinner-fade9234 {
-            0% {
-                background-color: #69717d;
-            }
-
-            100% {
-                background-color: transparent;
-            }
+        .ios-spinner div:nth-child(1) { transform: rotate(0deg); animation-delay: -1.1s; }
+        .ios-spinner div:nth-child(2) { transform: rotate(30deg); animation-delay: -1.0s; }
+        .ios-spinner div:nth-child(3) { transform: rotate(60deg); animation-delay: -0.9s; }
+        .ios-spinner div:nth-child(4) { transform: rotate(90deg); animation-delay: -0.8s; }
+        .ios-spinner div:nth-child(5) { transform: rotate(120deg); animation-delay: -0.7s; }
+        .ios-spinner div:nth-child(6) { transform: rotate(150deg); animation-delay: -0.6s; }
+        .ios-spinner div:nth-child(7) { transform: rotate(180deg); animation-delay: -0.5s; }
+        .ios-spinner div:nth-child(8) { transform: rotate(210deg); animation-delay: -0.4s; }
+        .ios-spinner div:nth-child(9) { transform: rotate(240deg); animation-delay: -0.3s; }
+        .ios-spinner div:nth-child(10) { transform: rotate(270deg); animation-delay: -0.2s; }
+        .ios-spinner div:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1s; }
+        .ios-spinner div:nth-child(12) { transform: rotate(330deg); animation-delay: 0s; }
+        @keyframes ios-spinner-anim {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         /* Folder Upload CSS */
-        .upload-box {
+        .folder-container {
             --transition: 350ms;
             --folder-W: 100px;
             --folder-H: 70px;
@@ -226,15 +170,15 @@
             background: linear-gradient(135deg, #6dd5ed, #2193b0);
             border-radius: 15px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            height: calc(var(--folder-H) * 2.2);
+            height: calc(var(--folder-H) * 2.0);
             position: relative;
             width: 100%;
             max-width: 280px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.3s;
         }
 
-        .folder {
+        .folder-container .folder {
             position: absolute;
             top: -15px;
             left: calc(50% - 50px);
@@ -242,19 +186,19 @@
             transition: transform var(--transition) ease;
         }
 
-        .folder:hover {
+        .folder-container:hover .folder {
             transform: scale(1.05);
         }
 
-        .folder .front-side,
-        .folder .back-side {
+        .folder-container .folder .front-side,
+        .folder-container .folder .back-side {
             position: absolute;
             transition: transform var(--transition);
             transform-origin: bottom center;
         }
 
-        .folder .back-side::before,
-        .folder .back-side::after {
+        .folder-container .folder .back-side::before,
+        .folder-container .folder .back-side::after {
             content: "";
             display: block;
             background-color: white;
@@ -268,23 +212,22 @@
             z-index: 0;
         }
 
-        .upload-box:hover .back-side::before {
+        .folder-container:hover .folder .back-side::before {
             transform: rotateX(-5deg) skewX(5deg);
         }
-
-        .upload-box:hover .back-side::after {
+        .folder-container:hover .folder .back-side::after {
             transform: rotateX(-15deg) skewX(12deg);
         }
 
-        .folder .front-side {
+        .folder-container .folder .front-side {
             z-index: 1;
         }
 
-        .upload-box:hover .front-side {
+        .folder-container:hover .folder .front-side {
             transform: rotateX(-40deg) skewX(15deg);
         }
 
-        .folder .tip {
+        .folder-container .folder .tip {
             background: linear-gradient(135deg, #ff9a56, #ff6f56);
             width: 70px;
             height: 15px;
@@ -295,7 +238,7 @@
             z-index: 2;
         }
 
-        .folder .cover {
+        .folder-container .folder .cover {
             background: linear-gradient(135deg, #ffe563, #ffc663);
             width: var(--folder-W);
             height: var(--folder-H);
@@ -303,8 +246,8 @@
             border-radius: 10px;
         }
 
-        .custom-file-upload {
-            font-size: 1em;
+        .folder-container .custom-file-upload {
+            font-size: 0.9em;
             color: #ffffff;
             text-align: center;
             background: rgba(255, 255, 255, 0.2);
@@ -313,33 +256,24 @@
             transition: background var(--transition) ease;
             display: inline-block;
             width: 100%;
-            padding: 10px 15px;
+            padding: 8px 15px;
             position: relative;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             font-weight: bold;
-            margin-bottom: 5px;
         }
 
-        .custom-file-upload:hover {
+        .folder-container .custom-file-upload:hover {
             background: rgba(255, 255, 255, 0.4);
         }
 
-        .custom-file-upload input[type="file"] {
+        .folder-container .custom-file-upload input[type="file"] {
             display: none;
         }
 
         @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-15px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
         }
 
         /* Image Grid */
@@ -405,7 +339,7 @@
             </div>
             <div class="bg-gray-100 p-1 rounded-full flex shadow-inner w-full sm:w-auto">
                 <button onclick="switchTab('form')" id="tab-form"
-                    class="flex-1 sm:flex-none px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all shadow bg-white text-blue-600 no-break text-center">บันทึก</button>
+                    class="flex-1 sm:flex-none px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all shadow bg-white text-blue-600 no-break text-center">Form</button>
                 <button onclick="switchTab('dashboard')" id="tab-dashboard"
                     class="flex-1 sm:flex-none px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-gray-500 hover:text-gray-700 transition-all no-break text-center">Dashboard</button>
             </div>
@@ -413,7 +347,7 @@
 
         <div class="flex-1 overflow-y-auto overflow-x-hidden p-0 relative bg-gray-50/30">
 
-            <div id="view-form" class="p-3 sm:p-6 animate-fade-in max-w-2xl mx-auto pb-20">
+            <div id="view-form" class="p-3 sm:p-6 animate-fade-in max-w-2xl mx-auto pb-6">
                 <div class="rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white">
                     <div
                         class="bg-gradient-to-r from-orange-300 to-orange-400 p-3 sm:p-4 text-center relative overflow-hidden">
@@ -524,24 +458,22 @@
                                     </div>
                                 </div>
 
-                                <div class="mt-4 flex flex-col items-center">
-                                    <label
-                                        class="block text-sm font-semibold text-gray-600 mb-2 w-full text-left">แนบรูปภาพประกอบ
-                                        (Optional)</label>
+                                <div class="mt-4 flex flex-col items-center w-full">
+                                    <label class="block text-sm font-semibold text-gray-600 mb-2 w-full text-left">แนบรูปภาพประกอบ (Optional)</label>
 
-                                    <div id="dropArea" class="upload-box">
-                                        <div class="folder">
-                                            <div class="front-side">
-                                                <div class="tip"></div>
-                                                <div class="cover"></div>
+                                    <!-- Minimal Drag & Drop Area -->
+                                    <div id="dropArea" class="w-full h-32 relative border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden">
+                                        <input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" id="fileInput" type="file" accept="image/*" multiple onchange="handleFileSelect(this)" />
+                                        
+                                        <div class="z-10 flex flex-col items-center gap-2 pointer-events-none transition-transform group-hover:-translate-y-1">
+                                            <div class="w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-blue-500 group-hover:scale-110 group-hover:border-blue-200 group-hover:shadow-md transition-all">
+                                                <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
                                             </div>
-                                            <div class="back-side cover"></div>
+                                            <div class="text-center">
+                                                 <p class="text-sm font-bold text-gray-600 group-hover:text-blue-600 transition-colors" id="dropText">คลิก หรือ ลากไฟล์มาวาง</p>
+                                                 <p class="text-[10px] text-gray-400">รองรับไฟล์รูปภาพ (สูงสุด 10MB)</p>
+                                            </div>
                                         </div>
-                                        <label class="custom-file-upload">
-                                            <input class="title" id="fileInput" type="file" accept="image/*" multiple
-                                                onchange="handleFileSelect(this)" />
-                                            <span id="dropText">Choose a file</span>
-                                        </label>
                                     </div>
 
                                     <div id="imageGrid" class="image-grid w-full"></div>
@@ -557,19 +489,62 @@
                         </form>
                     </div>
                 </div>
-                <p class="text-center text-xs text-gray-400 mt-4">© 2025 Hospital Safety Report System</p>
             </div>
 
-            <div id="view-dashboard" class="hidden p-3 sm:p-6 animate-fade-in flex flex-col pb-10">
-                <div class="flex justify-between items-center mb-4 gap-2">
+            <div id="view-dashboard" class="hidden p-3 sm:p-6 animate-fade-in flex flex-col pb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                     <div>
                         <h3 class="font-bold text-lg text-gray-800 no-break">สรุปภาพรวม</h3>
                         <p class="text-xs text-gray-500 no-break">ข้อมูลตามตัวกรองปัจจุบัน</p>
                     </div>
-                    <button onclick="loadDashboardData()"
-                        class="text-xs sm:text-sm bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full shadow-sm text-blue-600 hover:bg-blue-100 font-bold transition-all flex items-center gap-1.5 active:scale-95 no-break"><i
-                            class="fa-solid fa-rotate"></i> อัปเดต</button>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button onclick="exportToExcel()" class="flex-1 sm:flex-none justify-center text-xs sm:text-sm bg-green-50 border border-green-100 px-4 py-1.5 rounded-full shadow-sm text-green-600 hover:bg-green-100 font-bold transition-all flex items-center gap-1.5 active:scale-95 no-break"><i class="fa-solid fa-file-excel"></i> Export</button>
+                        <button onclick="loadDashboardData()" class="flex-1 sm:flex-none justify-center text-xs sm:text-sm bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full shadow-sm text-blue-600 hover:bg-blue-100 font-bold transition-all flex items-center gap-1.5 active:scale-95 no-break"><i class="fa-solid fa-rotate"></i> อัปเดต</button>
+                    </div>
                 </div>
+
+                <!-- ย้ายส่วนค้นหาและกรองมาไว้ด้านบน -->
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-4 flex flex-col gap-3">
+                    <div class="relative w-full">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="ค้นหา HN, รายละเอียด..." class="text-sm border border-gray-200 rounded-lg pl-8 pr-2 py-2 w-full focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none" onkeyup="applyTableFilters()">
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase ml-1">เริ่ม</span>
+                            <input type="date" id="filterStartDate" class="border border-gray-200 rounded-lg p-2 bg-gray-50 w-full text-xs outline-none focus:border-blue-400" onchange="applyTableFilters()">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase ml-1">ถึง</span>
+                            <input type="date" id="filterEndDate" class="border border-gray-200 rounded-lg p-2 bg-gray-50 w-full text-xs outline-none focus:border-blue-400" onchange="applyTableFilters()">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase ml-1">ประเภท</span>
+                            <select id="filterType" class="border border-gray-200 rounded-lg p-2 bg-gray-50 w-full text-xs outline-none focus:border-blue-400" onchange="applyTableFilters()">
+                                <option value="">ทั้งหมด</option>
+                                <option value="แพ้ยาซ้ำ">แพ้ยาซ้ำ</option>
+                                <option value="จ่ายยาผิดคน">ผิดคน</option>
+                                <option value="ME ระดับ E ขึ้นไป">ระดับ E+</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase ml-1">ความรุนแรง</span>
+                            <select id="filterSeverity" class="border border-gray-200 rounded-lg p-2 bg-gray-50 w-full text-xs outline-none focus:border-blue-400" onchange="applyTableFilters()">
+                                <option value="">ทั้งหมด</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                                <option value="G">G</option>
+                                <option value="H">H</option>
+                                <option value="I">I</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-4 sm:mb-6">
                     <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-0.5 shadow-md">
                         <div class="bg-white rounded-xl p-3 sm:p-4 flex items-center justify-between">
@@ -604,46 +579,8 @@
                     <div class="p-3 border-b bg-gray-50/50 flex flex-col gap-2">
                         <div class="flex justify-between items-center">
                             <h4 class="font-bold text-gray-700 flex items-center gap-2 text-sm no-break"><i
-                                    class="fa-solid fa-list-ul text-blue-500"></i> รายการบันทึก</h4><button
-                                onclick="exportToExcel()"
-                                class="bg-green-500 hover:bg-green-600 text-white text-[10px] sm:text-xs px-3 py-1 rounded-lg flex items-center gap-1 shadow active:scale-95 font-bold no-break"><i
-                                    class="fa-solid fa-file-excel"></i> Export</button>
+                                    class="fa-solid fa-list-ul text-blue-500"></i> รายการบันทึก</h4>
                         </div>
-                        <div class="relative w-full"><i
-                                class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i><input
-                                type="text" id="searchInput" placeholder="ค้นหา..."
-                                class="text-sm border border-gray-200 rounded-lg pl-8 pr-2 py-1.5 w-full focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
-                                onkeyup="applyTableFilters()"></div>
-                    </div>
-                    <div class="p-2 grid grid-cols-2 gap-2 bg-white text-[10px] sm:text-xs border-b">
-                        <div class="flex flex-col gap-0.5"><span class="text-gray-400 font-bold ml-1">เริ่ม</span><input
-                                type="date" id="filterStartDate" class="border rounded-lg p-1 bg-gray-50 w-full text-xs"
-                                onchange="applyTableFilters()"></div>
-                        <div class="flex flex-col gap-0.5"><span class="text-gray-400 font-bold ml-1">ถึง</span><input
-                                type="date" id="filterEndDate" class="border rounded-lg p-1 bg-gray-50 w-full text-xs"
-                                onchange="applyTableFilters()"></div>
-                        <div class="flex flex-col gap-0.5"><span
-                                class="text-gray-400 font-bold ml-1">ประเภท</span><select id="filterType"
-                                class="border rounded-lg p-1 bg-gray-50 w-full text-xs" onchange="applyTableFilters()">
-                                <option value="">ทั้งหมด</option>
-                                <option value="แพ้ยาซ้ำ">แพ้ยาซ้ำ</option>
-                                <option value="จ่ายยาผิดคน">ผิดคน</option>
-                                <option value="ME ระดับ E ขึ้นไป">ระดับ E+</option>
-                            </select></div>
-                        <div class="flex flex-col gap-0.5"><span
-                                class="text-gray-400 font-bold ml-1">ความรุนแรง</span><select id="filterSeverity"
-                                class="border rounded-lg p-1 bg-gray-50 w-full text-xs" onchange="applyTableFilters()">
-                                <option value="">ทั้งหมด</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="E">E</option>
-                                <option value="F">F</option>
-                                <option value="G">G</option>
-                                <option value="H">H</option>
-                                <option value="I">I</option>
-                            </select></div>
                     </div>
                     <div class="overflow-auto flex-1 relative">
                         <table class="w-full text-xs sm:text-sm text-left text-gray-600">
@@ -653,7 +590,7 @@
                                     <th class="px-3 py-2 font-bold no-break">HN / AN</th>
                                     <th class="px-3 py-2 font-bold no-break">ประเภท</th>
                                     <th class="px-3 py-2 font-bold no-break">รายละเอียด</th>
-                                    <th class="px-3 py-2 font-bold no-break">ระดับ</th>
+                                    <th class="px-3 py-2 font-bold no-break text-center">ระดับ</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody" class="bg-white divide-y divide-gray-100">
@@ -675,6 +612,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Moved Copyright here to be visible on both pages -->
+            <p class="text-center text-xs text-gray-400 pb-6 w-full">© 2025 กลุ่มงานเภสัชกรรม โรงพยาบาลอุตรดิตถ์</p>
         </div>
     </div>
 
@@ -712,8 +652,9 @@
                 </div>
                 <div><label
                         class="block text-[10px] font-bold text-gray-400 uppercase mb-1 no-break">ระดับความรุนแรง</label>
-                    <div class="bg-red-50 border-l-4 border-red-400 rounded-r-lg p-2.5">
-                        <p id="modalSeverity" class="text-red-700 font-bold text-xs sm:text-sm"></p>
+                    <!-- Update ID for Severity Container -->
+                    <div id="modalSeverityContainer" class="rounded-r-lg p-2.5 border-l-4 transition-colors">
+                        <p id="modalSeverity" class="font-bold text-xs sm:text-sm"></p>
                     </div>
                 </div>
                 <div><label
@@ -743,6 +684,33 @@
                 <button onclick="closeModal()"
                     class="bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100">ปิด</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="imageViewerModal" class="hidden fixed inset-0 z-[10002] bg-black/90 backdrop-blur-sm flex justify-center items-center transition-all duration-300 opacity-0 overflow-hidden">
+        
+        <!-- Close Button -->
+        <button class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors z-[10004] p-2 bg-black/20 rounded-full" onclick="closeImageViewer()">
+            <i class="fa-solid fa-xmark text-2xl drop-shadow-md"></i>
+        </button>
+
+        <!-- Zoom Controls -->
+        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[10004] flex gap-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 shadow-lg">
+            <button onclick="adjustZoom(-0.2)" class="text-white hover:text-blue-400 transition-colors"><i class="fa-solid fa-magnifying-glass-minus text-xl"></i></button>
+            <button onclick="resetZoom()" class="text-white hover:text-blue-400 transition-colors px-2"><i class="fa-solid fa-compress text-xl"></i></button>
+            <button onclick="adjustZoom(0.2)" class="text-white hover:text-blue-400 transition-colors"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></button>
+        </div>
+
+        <!-- Image Container -->
+        <div class="relative w-full h-full flex justify-center items-center overflow-hidden" onclick="closeImageViewer()">
+             <img id="fullImage" src="" alt="Full size" 
+                  class="max-w-[95vw] max-h-[95vh] object-contain rounded-lg shadow-2xl transition-transform duration-100 ease-out origin-center cursor-move" 
+                  onclick="event.stopPropagation()">
+        </div>
+
+        <div id="imageLoader" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+             <i class="fa-solid fa-circle-notch fa-spin text-white text-4xl"></i>
         </div>
     </div>
 
@@ -786,14 +754,53 @@
         document.addEventListener('DOMContentLoaded', () => {
             const dropArea = document.getElementById('dropArea');
             if (dropArea) {
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false));
-                ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.querySelector('.upload-box').classList.add('drag-active'), false)); // แก้ class ให้ตรงกับ CSS ใหม่
-                ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.querySelector('.upload-box').classList.remove('drag-active'), false));
+                // Prevent defaults for all drag events
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, preventDefaults, false);
+                });
+                function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+                // Highlight drop area when dragging over it
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, () => {
+                        dropArea.classList.add('border-blue-500', 'bg-blue-50', 'scale-[1.02]');
+                        dropArea.classList.remove('border-gray-300', 'bg-gray-50/50');
+                    }, false);
+                });
+
+                // Unhighlight drop area when leaving or dropping
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, () => {
+                        dropArea.classList.remove('border-blue-500', 'bg-blue-50', 'scale-[1.02]');
+                        dropArea.classList.add('border-gray-300', 'bg-gray-50/50');
+                    }, false);
+                });
+
+                // Handle dropped files
                 dropArea.addEventListener('drop', (e) => {
                     const files = e.dataTransfer.files;
                     if (files.length) handleFiles(files);
                 }, false);
             }
+            
+            // Image Viewer Drag Logic
+            const img = document.getElementById('fullImage');
+            
+            // Mouse Events
+            img.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            
+            // Touch Events
+            img.addEventListener('touchstart', startDrag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', endDrag);
+            
+            // Wheel Zoom
+            img.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                adjustZoom(e.deltaY > 0 ? -0.1 : 0.1);
+            }, { passive: false });
         });
 
         function handleFileSelect(input) {
@@ -813,9 +820,9 @@
         function updateDropText() {
             const dropText = document.getElementById('dropText');
             if (uploadedFiles.length > 0) {
-                dropText.innerHTML = `เพิ่มรูปภาพอีก... (${uploadedFiles.length})`;
+                dropText.innerHTML = `<span class="text-blue-600">เลือกแล้ว ${uploadedFiles.length} รูป</span> <span class="text-gray-400 font-normal text-xs">(เพิ่มอีกได้)</span>`;
             } else {
-                dropText.innerHTML = "Choose a file";
+                dropText.innerHTML = "คลิก หรือ ลากไฟล์มาวาง";
             }
         }
 
@@ -1085,6 +1092,17 @@
             updateDashboardStats(filteredRecords);
         }
 
+        // ✅ Helper สำหรับสี Severity
+        function getSeverityClass(sevCode) {
+            const s = sevCode.charAt(0);
+            if (['A', 'B'].includes(s)) return 'bg-gray-100 text-gray-700 border border-gray-200';
+            if (['C', 'D'].includes(s)) return 'bg-green-100 text-green-700 border border-green-200';
+            if (['E', 'F'].includes(s)) return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+            if (['G', 'H'].includes(s)) return 'bg-orange-100 text-orange-800 border border-orange-200';
+            if (['I'].includes(s)) return 'bg-red-100 text-red-700 border border-red-200';
+            return 'bg-gray-100 text-gray-700 border border-gray-200';
+        }
+
         // ✅ เพิ่มฟังก์ชัน Render Table ที่ขาดหายไป
         function renderTable() {
             const tbody = document.getElementById('tableBody');
@@ -1109,12 +1127,17 @@
                 else if (item.meType.includes("ผิดคน")) badgeColor = "bg-pink-500";
                 else badgeColor = "bg-orange-500";
 
+                const sevCode = item.severity.split(' ')[0];
+                const sevClass = getSeverityClass(sevCode);
+
                 tr.innerHTML = `
             <td class="px-3 py-3 font-medium text-gray-600 no-break">${formatDate(item.date)}</td>
             <td class="px-3 py-3 text-blue-600 font-bold no-break">${item.hn}</td>
             <td class="px-3 py-3"><span class="${badgeColor} text-white px-2 py-0.5 rounded text-[10px] sm:text-xs no-break">${item.meType}</span></td>
             <td class="px-3 py-3 text-gray-500 truncate max-w-[100px] sm:max-w-[150px]">${item.details}</td>
-            <td class="px-3 py-3 font-bold text-red-500 text-center">${item.severity.split(' ')[0]}</td>
+            <td class="px-3 py-3 text-center">
+                <span class="${sevClass} px-2 py-1 rounded-md text-xs font-bold shadow-sm inline-block min-w-[30px]">${sevCode}</span>
+            </td>
         `;
                 tbody.appendChild(tr);
             });
@@ -1125,9 +1148,133 @@
 
         function updateDashboardStats(records) { document.getElementById('totalCount').textContent = records.length; const typeCounts = {}; const nameMapping = { 'แพ้ยาซ้ำ': 'แพ้ยาซ้ำ', 'จ่ายยาผิดคน': 'ผิดคน', 'ME ระดับ E ขึ้นไป': 'ระดับ E+' }; records.forEach(r => { const rawType = r.meType; const shortName = nameMapping[rawType] || rawType; typeCounts[shortName] = (typeCounts[shortName] || 0) + 1; }); const severityCounts = {}; records.forEach(r => { const sev = (r.severity || "").split(' ')[0]; if (sev) severityCounts[sev] = (severityCounts[sev] || 0) + 1; }); const sortedSevKeys = Object.keys(severityCounts).sort(); const sortedSevCounts = {}; sortedSevKeys.forEach(k => sortedSevCounts[k] = severityCounts[k]); renderCharts({ typeCounts: typeCounts, severityCounts: sortedSevCounts, total: records.length }); }
         let myTypeChart, mySevChart;
-        function renderCharts(data) { const typeLabels = Object.keys(data.typeCounts).map(label => { const value = data.typeCounts[label]; const percent = data.total > 0 ? ((value / data.total) * 100).toFixed(1) : 0; return `${label} (${percent}%)`; }); const ctxType = document.getElementById('typeChart').getContext('2d'); if (myTypeChart) myTypeChart.destroy(); myTypeChart = new Chart(ctxType, { type: 'doughnut', data: { labels: typeLabels, datasets: [{ data: Object.values(data.typeCounts), backgroundColor: ['#2dd4bf', '#f472b6', '#fb923c', '#818cf8', '#94a3b8'], borderColor: '#ffffff', borderWidth: 3, hoverOffset: 15, hoverBorderColor: '#ffffff', hoverBorderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: { family: 'Sarabun', size: 11 } } }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true, callbacks: { label: function (context) { return ' ' + context.raw + ' รายการ'; } } } }, animation: { animateScale: true, animateRotate: true } } }); const ctxSev = document.getElementById('severityChart').getContext('2d'); const gradientBlue = ctxSev.createLinearGradient(0, 0, 0, 400); gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 1)'); gradientBlue.addColorStop(1, 'rgba(147, 197, 253, 0.3)'); const gradientRed = ctxSev.createLinearGradient(0, 0, 0, 400); gradientRed.addColorStop(0, 'rgba(239, 68, 68, 1)'); gradientRed.addColorStop(1, 'rgba(252, 165, 165, 0.3)'); if (mySevChart) mySevChart.destroy(); const sevLabels = Object.keys(data.severityCounts); const sevData = Object.values(data.severityCounts); const backgroundColors = sevLabels.map(label => { return ['E', 'F', 'G', 'H', 'I'].some(l => label.startsWith(l)) ? gradientRed : gradientBlue; }); mySevChart = new Chart(ctxSev, { type: 'bar', data: { labels: sevLabels, datasets: [{ label: 'จำนวน', data: sevData, backgroundColor: backgroundColors, borderColor: 'transparent', borderWidth: 0, borderRadius: 6, barPercentage: 0.6, categoryPercentage: 0.8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1f2937', bodyColor: '#1f2937', borderColor: '#e5e7eb', borderWidth: 1, padding: 10, displayColors: false, callbacks: { title: function (context) { return 'ระดับความรุนแรง: ' + context[0].label; }, label: function (context) { let value = context.raw; let total = data.total; let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0; return ' ' + value + ' รายการ (' + percentage + '%)'; } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6', borderDash: [4, 4] }, ticks: { font: { family: 'Sarabun', size: 10 }, stepSize: 1 } }, x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 10 } } } } } }); }
+        function renderCharts(data) {
+            const rawLabels = Object.keys(data.typeCounts);
+            
+            // Map colors to match table badges (Tailwind 500 hex codes)
+            const colorMap = {
+                'แพ้ยาซ้ำ': '#14b8a6', // teal-500
+                'ผิดคน': '#ec4899',    // pink-500
+                'ระดับ E+': '#f97316'  // orange-500
+            };
 
-        // ✅ อัปเดต openRecordModal ให้เป็น Horizontal Scroll Gallery
+            const bgColors = rawLabels.map(label => colorMap[label] || '#9ca3af');
+
+            const typeLabels = rawLabels.map(label => {
+                const value = data.typeCounts[label];
+                const percent = data.total > 0 ? ((value / data.total) * 100).toFixed(1) : 0;
+                return `${label} (${percent}%)`;
+            });
+            
+            const ctxType = document.getElementById('typeChart').getContext('2d');
+            if (myTypeChart) myTypeChart.destroy();
+            myTypeChart = new Chart(ctxType, {
+                type: 'doughnut',
+                data: {
+                    labels: typeLabels,
+                    datasets: [{
+                        data: Object.values(data.typeCounts),
+                        backgroundColor: bgColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 15,
+                        hoverBorderColor: '#ffffff',
+                        hoverBorderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: { family: 'Sarabun', size: 11 } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#1f2937',
+                            bodyColor: '#1f2937',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 10,
+                            boxPadding: 4,
+                            usePointStyle: true,
+                            callbacks: { label: function (context) { return ' ' + context.raw + ' รายการ'; } }
+                        }
+                    },
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+
+            const ctxSev = document.getElementById('severityChart').getContext('2d');
+            
+            // Generate background colors for Severity Chart based on levels
+            const sevLabels = Object.keys(data.severityCounts);
+            const sevData = Object.values(data.severityCounts);
+            const backgroundColors = sevLabels.map(label => {
+                const s = label.charAt(0);
+                if (['A', 'B'].includes(s)) return '#6b7280'; // Gray
+                if (['C', 'D'].includes(s)) return '#22c55e'; // Green
+                if (['E', 'F'].includes(s)) return '#eab308'; // Yellow
+                if (['G', 'H'].includes(s)) return '#f97316'; // Orange
+                if (['I'].includes(s)) return '#ef4444'; // Red
+                return '#cbd5e1'; // Default
+            });
+
+            if (mySevChart) mySevChart.destroy();
+            mySevChart = new Chart(ctxSev, {
+                type: 'bar',
+                data: {
+                    labels: sevLabels,
+                    datasets: [{
+                        label: 'จำนวน',
+                        data: sevData,
+                        backgroundColor: backgroundColors,
+                        borderColor: 'transparent',
+                        borderWidth: 0,
+                        borderRadius: 6,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#1f2937',
+                            bodyColor: '#1f2937',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                title: function (context) { return 'ระดับความรุนแรง: ' + context[0].label; },
+                                label: function (context) {
+                                    let value = context.raw;
+                                    let total = data.total;
+                                    let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return ' ' + value + ' รายการ (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f3f4f6', borderDash: [4, 4] },
+                            ticks: { font: { family: 'Sarabun', size: 10 }, stepSize: 1 }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Sarabun', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ✅ อัปเดต openRecordModal ให้เป็น Horizontal Scroll Gallery พร้อม Loading
         function openRecordModal(index) {
             const item = filteredRecords[index];
             if (!item) return;
@@ -1142,7 +1289,38 @@
             if (item.meType.includes('แพ้')) typeSpan.classList.add('bg-teal-500');
             else if (item.meType.includes('ผิดคน')) typeSpan.classList.add('bg-pink-500');
             else typeSpan.classList.add('bg-orange-500');
-            document.getElementById('modalSeverity').textContent = item.severity;
+            
+            // Severity Styling
+            const sevCode = (item.severity || "").split(' ')[0];
+            const container = document.getElementById('modalSeverityContainer');
+            const text = document.getElementById('modalSeverity');
+            
+            // Reset base classes
+            container.className = "rounded-lg p-2.5 border-l-4 transition-colors shadow-sm";
+            text.className = "font-bold text-xs sm:text-sm";
+
+            const s = sevCode.charAt(0);
+            if (['A', 'B'].includes(s)) {
+                container.classList.add('bg-gray-50', 'border-gray-400');
+                text.classList.add('text-gray-700');
+            } else if (['C', 'D'].includes(s)) {
+                container.classList.add('bg-green-50', 'border-green-400');
+                text.classList.add('text-green-700');
+            } else if (['E', 'F'].includes(s)) {
+                container.classList.add('bg-yellow-50', 'border-yellow-400');
+                text.classList.add('text-yellow-800');
+            } else if (['G', 'H'].includes(s)) {
+                container.classList.add('bg-orange-50', 'border-orange-400');
+                text.classList.add('text-orange-800');
+            } else if (['I'].includes(s)) {
+                container.classList.add('bg-red-50', 'border-red-400');
+                text.classList.add('text-red-800');
+            } else {
+                container.classList.add('bg-gray-50', 'border-gray-400');
+                text.classList.add('text-gray-700');
+            }
+            text.textContent = item.severity;
+
             document.getElementById('modalDetails').textContent = item.details || "-";
 
             const gallery = document.getElementById('modalGallery');
@@ -1156,11 +1334,41 @@
                 const urls = item.imageUrl.split(',');
                 urls.forEach(url => {
                     const thumbUrl = convertDriveLink(url);
+
+                    // สร้าง Wrapper สำหรับรูปภาพและ Loading
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "relative w-full h-48 flex-shrink-0 snap-center rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center";
+
+                    // สร้าง Loading Spinner แบบ iOS
+                    const loader = document.createElement('div');
+                    loader.className = "absolute inset-0 flex items-center justify-center";
+                    loader.innerHTML = `
+                        <div class="ios-spinner">
+                            <div></div><div></div><div></div><div></div><div></div><div></div>
+                            <div></div><div></div><div></div><div></div><div></div><div></div>
+                        </div>`;
+
+                    // สร้าง Element Image
                     const img = document.createElement('img');
-                    img.src = thumbUrl;
-                    img.className = "w-full h-48 object-contain bg-black/5 rounded-lg flex-shrink-0 snap-center border border-gray-200 cursor-pointer";
-                    img.onclick = () => window.open(url, '_blank');
-                    gallery.appendChild(img);
+                    img.className = "w-full h-full object-contain cursor-pointer transition-opacity duration-300 opacity-0 relative z-10";
+                    
+                    // Event เมื่อโหลดรูปเสร็จ
+                    img.onload = () => {
+                        loader.remove(); // ลบ Loading ออก
+                        img.classList.remove('opacity-0'); // แสดงรูปภาพ
+                    };
+                    
+                    // Event เมื่อโหลดรูปไม่ผ่าน
+                    img.onerror = () => {
+                        loader.innerHTML = '<i class="fa-solid fa-image-slash text-gray-300 text-2xl"></i>';
+                    };
+
+                    img.onclick = () => openImageViewer(thumbUrl); // Change to open lightbox
+                    img.src = thumbUrl; // เริ่มโหลดรูป
+
+                    wrapper.appendChild(loader);
+                    wrapper.appendChild(img);
+                    gallery.appendChild(wrapper);
                 });
             } else {
                 gallery.classList.remove('hidden');
@@ -1180,6 +1388,105 @@
             let csv = "data:text/csv;charset=utf-8,\uFEFFTimestamp,Date,HN,Type,Details,Severity,Reporter,ImageURL\n";
             filteredRecords.forEach(r => { csv += `${r.timestamp},${r.date},${r.hn},${r.meType},${(r.details || "").replace(/,/g, " ")},${(r.severity || "").split(' ')[0]},${r.reporter || "-"},${r.imageUrl || "-"}\n`; });
             const link = document.createElement("a"); link.href = encodeURI(csv); link.download = "ME_Report.csv"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // Global variables for Image Viewer
+        let imgScale = 1;
+        let imgTranslateX = 0;
+        let imgTranslateY = 0;
+        let isDraggingImg = false;
+        let startDragX = 0;
+        let startDragY = 0;
+
+        // New Image Viewer Functions
+        function openImageViewer(url) {
+            const modal = document.getElementById('imageViewerModal');
+            const img = document.getElementById('fullImage');
+            const loader = document.getElementById('imageLoader');
+
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth; 
+            modal.classList.remove('opacity-0');
+            
+            loader.classList.remove('hidden');
+            img.classList.add('opacity-0');
+            
+            // Reset Zoom
+            resetZoom();
+            
+            img.onload = () => {
+                loader.classList.add('hidden');
+                img.classList.remove('opacity-0');
+            };
+            
+            img.src = url;
+        }
+
+        function closeImageViewer() {
+            const modal = document.getElementById('imageViewerModal');
+            const img = document.getElementById('fullImage');
+            
+            modal.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                img.src = '';
+                resetZoom();
+            }, 300);
+        }
+
+        function adjustZoom(delta) {
+            imgScale += delta;
+            if (imgScale < 0.5) imgScale = 0.5;
+            if (imgScale > 5) imgScale = 5;
+            updateTransform();
+        }
+
+        function resetZoom() {
+            imgScale = 1;
+            imgTranslateX = 0;
+            imgTranslateY = 0;
+            updateTransform();
+        }
+
+        function updateTransform() {
+            const img = document.getElementById('fullImage');
+            if(img) {
+                img.style.transform = `translate(${imgTranslateX}px, ${imgTranslateY}px) scale(${imgScale})`;
+            }
+        }
+
+        // Drag Logic
+        function startDrag(e) {
+            if (imgScale <= 1) return; // Only drag when zoomed in
+            isDraggingImg = true;
+            startDragX = (e.type === 'touchstart') ? e.touches[0].clientX : e.clientX;
+            startDragY = (e.type === 'touchstart') ? e.touches[0].clientY : e.clientY;
+            e.preventDefault();
+        }
+
+        function drag(e) {
+            if (!isDraggingImg) return;
+            e.preventDefault();
+            
+            const clientX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
+            const clientY = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
+            
+            const deltaX = clientX - startDragX;
+            const deltaY = clientY - startDragY;
+            
+            imgTranslateX += deltaX;
+            imgTranslateY += deltaY;
+            
+            updateTransform();
+            
+            startDragX = clientX;
+            startDragY = clientY;
+        }
+
+        function endDrag() {
+            isDraggingImg = false;
         }
 
         const styleSheet = document.createElement("style");
